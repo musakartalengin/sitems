@@ -22,25 +22,36 @@
             text-align: center;
         }
 
-        .quote {
+        .quote-container {
             background: white;
             padding: 40px;
             margin: 20px;
             border-radius: 20px;
             box-shadow: 0 8px 16px rgba(255, 167, 196, 0.2);
-            display: none;
-            animation: fadeIn 1s ease-in;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .quote.active {
-            display: block;
-        }
-
-        .quote p {
+        .quote {
             font-size: 28px;
             color: #ff6b95;
             margin: 0;
             line-height: 1.6;
+        }
+
+        .word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+            margin-right: 8px;
+        }
+
+        .word.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         #final-message {
@@ -67,21 +78,11 @@
             cursor: pointer;
             margin-top: 30px;
             transition: transform 0.2s, background 0.2s;
-            display: none;
-        }
-
-        .continue-btn.active {
-            display: inline-block;
         }
 
         .continue-btn:hover {
             background: #f50057;
             transform: scale(1.05);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes pulse {
@@ -93,50 +94,44 @@
 </head>
 <body>
     <div class="container">
-        <div class="quote" data-index="0">
-            <p>Hayat, içinde bulunduğun anı değerli kılmaktır.</p>
-        </div>
-        <div class="quote" data-index="1">
-            <p>Güzellik, bakan gözlerde başlar.</p>
-        </div>
-        <div class="quote" data-index="2">
-            <p>Her yeni gün, yeni bir başlangıçtır.</p>
-        </div>
-        <div class="quote" data-index="3">
-            <p>Mutluluk paylaştıkça çoğalır.</p>
-        </div>
-        <div class="quote" data-index="4">
-            <p>Sevgi, en güzel armağandır.</p>
+        <div class="quote-container">
+            <p class="quote">
+                <span class="word">Hiçbir</span>
+                <span class="word">şey</span>
+                <span class="word">yüreğinde</span>
+                <span class="word">güneşin</span>
+                <span class="word">doğmasına</span>
+                <span class="word">engel</span>
+                <span class="word">olmasın</span>
+            </p>
         </div>
         <div id="final-message">GÜNAYDIN FISTIK</div>
-        <button class="continue-btn active">Devam Et</button>
+        <button class="continue-btn">Devam Et</button>
     </div>
 
     <script>
-        const quotes = document.querySelectorAll('.quote');
+        const words = document.querySelectorAll('.word');
         const finalMessage = document.getElementById('final-message');
         const continueBtn = document.querySelector('.continue-btn');
-        let currentQuoteIndex = 0;
+        const quoteContainer = document.querySelector('.quote-container');
+        let currentWordIndex = 0;
 
-        function showQuote(index) {
-            quotes.forEach(quote => quote.classList.remove('active'));
-            finalMessage.classList.remove('active');
-            
-            if (index < quotes.length) {
-                quotes[index].classList.add('active');
+        function showNextWord() {
+            if (currentWordIndex < words.length) {
+                words[currentWordIndex].classList.add('visible');
+                currentWordIndex++;
             } else {
+                // Tüm kelimeler gösterildi, final mesajını göster
+                quoteContainer.style.display = 'none';
                 finalMessage.classList.add('active');
                 continueBtn.style.display = 'none';
             }
         }
 
-        continueBtn.addEventListener('click', () => {
-            currentQuoteIndex++;
-            showQuote(currentQuoteIndex);
-        });
+        continueBtn.addEventListener('click', showNextWord);
 
-        // İlk sözü göster
-        showQuote(0);
+        // İlk kelimeyi göster
+        showNextWord();
     </script>
 </body>
 </html> 
