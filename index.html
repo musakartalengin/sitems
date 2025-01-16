@@ -9,98 +9,134 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #fff0f6 0%, #ffa7c4 100%);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .quote-container {
+        .container {
             max-width: 800px;
-            margin: 0 auto;
             padding: 20px;
+            text-align: center;
         }
 
         .quote {
             background: white;
-            padding: 30px;
-            margin: 30px 0;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s, transform 0.5s;
+            padding: 40px;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(255, 167, 196, 0.2);
+            display: none;
+            animation: fadeIn 1s ease-in;
         }
 
-        .quote.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .quote.active {
+            display: block;
         }
 
         .quote p {
-            font-size: 24px;
-            color: #333;
-            text-align: center;
+            font-size: 28px;
+            color: #ff6b95;
+            margin: 0;
             line-height: 1.6;
         }
 
         #final-message {
-            font-size: 48px;
-            color: #ff6b6b;
+            display: none;
+            font-size: 52px;
+            color: #ff4081;
             text-align: center;
             padding: 50px 0;
             font-weight: bold;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: opacity 0.5s, transform 0.5s;
+            animation: pulse 2s infinite;
         }
 
-        #final-message.visible {
-            opacity: 1;
-            transform: scale(1);
+        #final-message.active {
+            display: block;
+        }
+
+        .continue-btn {
+            background: #ff4081;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.2s, background 0.2s;
+            display: none;
+        }
+
+        .continue-btn.active {
+            display: inline-block;
+        }
+
+        .continue-btn:hover {
+            background: #f50057;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
-    <div class="quote-container">
-        <div class="quote">
+    <div class="container">
+        <div class="quote" data-index="0">
             <p>Hayat, içinde bulunduğun anı değerli kılmaktır.</p>
         </div>
-        <div class="quote">
+        <div class="quote" data-index="1">
             <p>Güzellik, bakan gözlerde başlar.</p>
         </div>
-        <div class="quote">
+        <div class="quote" data-index="2">
             <p>Her yeni gün, yeni bir başlangıçtır.</p>
         </div>
-        <div class="quote">
+        <div class="quote" data-index="3">
             <p>Mutluluk paylaştıkça çoğalır.</p>
         </div>
-        <div class="quote">
+        <div class="quote" data-index="4">
             <p>Sevgi, en güzel armağandır.</p>
         </div>
         <div id="final-message">GÜNAYDIN FISTIK</div>
+        <button class="continue-btn active">Devam Et</button>
     </div>
 
     <script>
-        function checkScroll() {
-            const quotes = document.querySelectorAll('.quote');
-            const finalMessage = document.querySelector('#final-message');
-            
-            quotes.forEach(quote => {
-                const quoteTop = quote.getBoundingClientRect().top;
-                const quoteBottom = quote.getBoundingClientRect().bottom;
-                
-                if (quoteTop < window.innerHeight && quoteBottom > 0) {
-                    quote.classList.add('visible');
-                }
-            });
+        const quotes = document.querySelectorAll('.quote');
+        const finalMessage = document.getElementById('final-message');
+        const continueBtn = document.querySelector('.continue-btn');
+        let currentQuoteIndex = 0;
 
-            const finalMessageTop = finalMessage.getBoundingClientRect().top;
-            if (finalMessageTop < window.innerHeight) {
-                finalMessage.classList.add('visible');
+        function showQuote(index) {
+            quotes.forEach(quote => quote.classList.remove('active'));
+            finalMessage.classList.remove('active');
+            
+            if (index < quotes.length) {
+                quotes[index].classList.add('active');
+            } else {
+                finalMessage.classList.add('active');
+                continueBtn.style.display = 'none';
             }
         }
 
-        window.addEventListener('scroll', checkScroll);
-        window.addEventListener('load', checkScroll);
+        continueBtn.addEventListener('click', () => {
+            currentQuoteIndex++;
+            showQuote(currentQuoteIndex);
+        });
+
+        // İlk sözü göster
+        showQuote(0);
     </script>
 </body>
 </html> 
