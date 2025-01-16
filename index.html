@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Günaydın Fıstık - Güzel Sözler</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .quote-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .quote {
+            background: white;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .quote.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .quote p {
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        #final-message {
+            font-size: 48px;
+            color: #ff6b6b;
+            text-align: center;
+            padding: 50px 0;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        #final-message.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="quote-container">
+        <div class="quote">
+            <p>Hayat, içinde bulunduğun anı değerli kılmaktır.</p>
+        </div>
+        <div class="quote">
+            <p>Güzellik, bakan gözlerde başlar.</p>
+        </div>
+        <div class="quote">
+            <p>Her yeni gün, yeni bir başlangıçtır.</p>
+        </div>
+        <div class="quote">
+            <p>Mutluluk paylaştıkça çoğalır.</p>
+        </div>
+        <div class="quote">
+            <p>Sevgi, en güzel armağandır.</p>
+        </div>
+        <div id="final-message">GÜNAYDIN FISTIK</div>
+    </div>
+
+    <script>
+        function checkScroll() {
+            const quotes = document.querySelectorAll('.quote');
+            const finalMessage = document.querySelector('#final-message');
+            
+            quotes.forEach(quote => {
+                const quoteTop = quote.getBoundingClientRect().top;
+                const quoteBottom = quote.getBoundingClientRect().bottom;
+                
+                if (quoteTop < window.innerHeight && quoteBottom > 0) {
+                    quote.classList.add('visible');
+                }
+            });
+
+            const finalMessageTop = finalMessage.getBoundingClientRect().top;
+            if (finalMessageTop < window.innerHeight) {
+                finalMessage.classList.add('visible');
+            }
+        }
+
+        window.addEventListener('scroll', checkScroll);
+        window.addEventListener('load', checkScroll);
+    </script>
+</body>
+</html> 
