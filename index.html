@@ -98,15 +98,24 @@
             <p class="quote">
                 <span class="word">Hiçbir</span>
                 <span class="word">şey</span>
-                <span class="word">yüreğinde</span>
+                <span class="word">senden</span>
+                <span class="word">daha</span>
+                <span class="word">değerli</span>
+                <span class="word">değil</span>
+                <span class="word">şimdi</span>
+                <span class="word">kalk</span>
+                <span class="word">ve</span>
                 <span class="word">güneşin</span>
                 <span class="word">doğmasına</span>
-                <span class="word">engel</span>
-                <span class="word">olmasın</span>
+                <span class="word">izin</span>
+                <span class="word">ver</span>
             </p>
         </div>
-        <div id="final-message">GÜNAYDIN FISTIK</div>
+        <div id="final-message">GÜNAYDIN PRENSES</div>
         <button class="continue-btn">Devam Et</button>
+        <audio id="background-music" style="display: none;">
+            <source src="music.mp3" type="audio/mpeg">
+        </audio>
     </div>
 
     <script>
@@ -114,6 +123,7 @@
         const finalMessage = document.getElementById('final-message');
         const continueBtn = document.querySelector('.continue-btn');
         const quoteContainer = document.querySelector('.quote-container');
+        const backgroundMusic = document.getElementById('background-music');
         let currentWordIndex = 0;
 
         function showNextWord() {
@@ -125,6 +135,10 @@
                 quoteContainer.style.display = 'none';
                 finalMessage.classList.add('active');
                 continueBtn.style.display = 'none';
+                // Müziği çal
+                backgroundMusic.play().catch(error => {
+                    console.log("Müzik çalınamadı:", error);
+                });
             }
         }
 
