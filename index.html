@@ -90,28 +90,51 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            display: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .heart {
+            fill: #ff4081;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-1000px) rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <div id="particles-js"></div>
     <div class="container">
         <div class="quote-container">
             <p class="quote">
-                <span class="word">Hiçbir</span>
-                <span class="word">şey</span>
-                <span class="word">senden</span>
-                <span class="word">daha</span>
-                <span class="word">değerli</span>
-                <span class="word">değil</span>
-                <span class="word">şimdi</span>
-                <span class="word">kalk</span>
-                <span class="word">ve</span>
-                <span class="word">güneşin</span>
-                <span class="word">doğmasına</span>
-                <span class="word">izin</span>
-                <span class="word">ver</span>
+                <span class="word">Papatyalar</span>
+                <span class="word">dökülsün</span>
+                <span class="word">her</span>
+                <span class="word">yanına,</span>
+                <span class="word">sen</span>
+                <span class="word">geçerken</span>
+                <span class="word">yollardan</span>
             </p>
         </div>
-        <div id="final-message">GÜNAYDIN PRENSES</div>
+        <div id="final-message">İYİ TATİLLER FISTIK</div>
         <button class="continue-btn">Devam Et</button>
         <audio id="background-music" style="display: none;">
             <source src="music.mp3" type="audio/mpeg">
@@ -119,6 +142,28 @@
     </div>
 
     <script>
+        // SVG kalp şablonu
+        const heartSVG = `<svg class="heart" viewBox="0 0 32 32"><path d="M16 28.8c-.3 0-.5-.1-.7-.3l-11.8-12c-2.9-2.9-2.9-7.7 0-10.6C5 4.4 7 3.5 9.1 3.5c2.1 0 4.1.8 5.6 2.3L16 7.1l1.3-1.3c2.9-2.9 7.7-2.9 10.6 0 1.4 1.4 2.3 3.4 2.3 5.6s-.8 4.1-2.3 5.6L16.7 28.5c-.2.2-.4.3-.7.3z"/></svg>`;
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = heartSVG;
+            heart.style.position = 'fixed';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = '100vh';
+            heart.style.opacity = Math.random();
+            heart.style.animation = `float ${Math.random() * 3 + 2}s linear`;
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+        function startHeartAnimation() {
+            setInterval(createHeart, 100);
+        }
+
         const words = document.querySelectorAll('.word');
         const finalMessage = document.getElementById('final-message');
         const continueBtn = document.querySelector('.continue-btn');
@@ -139,6 +184,8 @@
                 backgroundMusic.play().catch(error => {
                     console.log("Müzik çalınamadı:", error);
                 });
+                // Kalp animasyonunu başlat
+                startHeartAnimation();
             }
         }
 
