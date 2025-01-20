@@ -118,23 +118,61 @@
             0% { transform: translateY(0) rotate(0deg); }
             100% { transform: translateY(-1000px) rotate(360deg); }
         }
+
+        .side-decoration {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 120px;
+            font-weight: bold;
+            color: rgba(255, 64, 129, 0.1);
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 20px;
+            pointer-events: none;
+            font-family: 'Segoe UI', sans-serif;
+            text-shadow: 2px 2px 4px rgba(255, 64, 129, 0.2);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .left-decoration {
+            left: 20px;
+        }
+
+        .right-decoration {
+            right: 20px;
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(255, 64, 129, 0.2);
+                color: rgba(255, 64, 129, 0.1);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(255, 64, 129, 0.4);
+                color: rgba(255, 64, 129, 0.2);
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="side-decoration left-decoration">MERVE</div>
+    <div class="side-decoration right-decoration">MERVE</div>
     <div id="particles-js"></div>
     <div class="container">
         <div class="quote-container">
             <p class="quote">
-                <span class="word">Papatyalar</span>
-                <span class="word">dökülsün</span>
-                <span class="word">her</span>
-                <span class="word">yanına,</span>
-                <span class="word">sen</span>
-                <span class="word">geçerken</span>
-                <span class="word">yollardan</span>
-            </p>
+                <span class="word">Ah</span>
+                <span class="word">o</span>
+                <span class="word">gözlerin;</span>
+                <span class="word">ruhsatsız</span>
+                <span class="word">silah</span>
+                <span class="word">taşımak</span>
+                <span class="word">değil de</span>
+                <span class="word">ne?</span>
         </div>
-        <div id="final-message">İYİ TATİLLER FISTIK</div>
+        <div id="final-message">Günaydın Fıstık</div>
         <button class="continue-btn">Devam Et</button>
         <audio id="background-music" style="display: none;">
             <source src="music_new.mp3?v=1" type="audio/mpeg">
