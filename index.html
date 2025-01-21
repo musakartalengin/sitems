@@ -261,9 +261,12 @@
         // Otomatik kaydırma
         const gallery = document.querySelector('.gallery-container');
         let scrollPosition = 0;
-        const scrollSpeed = 2;
+        const scrollSpeed = 0.5; // Hızı çok daha yavaş yaptık
+        let isScrolling = true;
 
         function autoScroll() {
+            if (!isScrolling) return;
+            
             scrollPosition += scrollSpeed;
             gallery.scrollLeft = scrollPosition;
 
@@ -272,11 +275,20 @@
             if (scrollPosition >= maxScroll - 100) {
                 surpriseContainer.classList.add('active');
                 startHeartAnimation();
+                isScrolling = false;
                 return;
             }
 
             requestAnimationFrame(autoScroll);
         }
+
+        // Sayfa yüklendiğinde kaydırmayı başlat
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                isScrolling = true;
+                requestAnimationFrame(autoScroll);
+            }, 1000); // 1 saniye bekleyip başlat
+        });
 
         // Kalp animasyonunu başlat
         function startHeartAnimation() {
@@ -284,9 +296,6 @@
                 heartInterval = setInterval(createHeart, 50);
             }
         }
-
-        // Animasyonları başlat
-        requestAnimationFrame(autoScroll);
 
         // Her resme animasyon gecikmesi ekle
         document.querySelectorAll('.gallery-item').forEach((item, index) => {
