@@ -259,27 +259,24 @@
         }
 
         // Otomatik kaydırma için yeni kod
-        let currentScroll = 0;
-        const scrollAmount = 3; // Her adımda kaydırma miktarını 2'den 3'e çıkardık
+        const scrollSpeed = 15; // Çok daha hızlı kaydırma
         
-        function scrollGallery() {
-            currentScroll += scrollAmount;
-            gallery.scrollLeft = currentScroll;
-            
-            const maxScroll = gallery.scrollWidth - gallery.clientWidth;
-            
-            if (currentScroll >= maxScroll - 100) {
+        function smoothScroll() {
+            if (gallery.scrollLeft >= gallery.scrollWidth - gallery.clientWidth - 100) {
                 surpriseContainer.classList.add('active');
                 startHeartAnimation();
-                return; // Kaydırmayı durdur
+                return;
             }
             
-            setTimeout(scrollGallery, 20); // Güncelleme süresini 30ms'den 20ms'ye düşürdük
+            gallery.scrollLeft += scrollSpeed;
+            requestAnimationFrame(smoothScroll);
         }
 
         // Sayfa yüklendiğinde başlat
         window.addEventListener('load', () => {
-            setTimeout(scrollGallery, 1000); // 1 saniye bekle ve başla
+            setTimeout(() => {
+                requestAnimationFrame(smoothScroll);
+            }, 500); // Daha kısa bekleme süresi
         });
 
         function startHeartAnimation() {
