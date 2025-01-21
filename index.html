@@ -245,18 +245,11 @@
             heart.style.top = Math.random() * 100 + 'vh';
             heart.style.opacity = Math.random() * 0.8 + 0.2;
             
-            // Yatay hareket için yeni animasyon
-            const horizontalMove = isLeftSide ? 
-                `translateX(${Math.random() * 300}px)` : 
-                `translateX(-${Math.random() * 300}px)`;
-                
-            heart.style.animation = `
-                float ${Math.random() * 2 + 2}s ease-out
-            `;
+            heart.style.animation = isLeftSide ? 
+                `floatLeft ${Math.random() * 2 + 2}s ease-out` : 
+                `floatRight ${Math.random() * 2 + 2}s ease-out`;
             
-            // Özel stil ekle
             heart.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
-            heart.style.transition = 'all 0.3s ease';
             
             document.body.appendChild(heart);
 
@@ -265,48 +258,40 @@
             }, 3000);
         }
 
-        // Kaydırma animasyonunu düzeltme
+        // Otomatik kaydırma
         const gallery = document.querySelector('.gallery-container');
-        let scrollAmount = 0;
-        const scrollSpeed = 3; // Hızı biraz azalttık
-        let lastTimestamp = null;
+        let scrollPosition = 0;
+        const scrollSpeed = 2;
 
-        function smoothScroll(timestamp) {
-            if (!lastTimestamp) lastTimestamp = timestamp;
-            const deltaTime = timestamp - lastTimestamp;
-            lastTimestamp = timestamp;
+        function autoScroll() {
+            scrollPosition += scrollSpeed;
+            gallery.scrollLeft = scrollPosition;
 
-            scrollAmount += scrollSpeed * (deltaTime / 16); // 60fps için normalize
-            gallery.scrollLeft = scrollAmount;
-            
             // Son resme yaklaşıldığında sürpriz efektini başlat
             const maxScroll = gallery.scrollWidth - gallery.clientWidth;
-            if (scrollAmount >= maxScroll - 100) {
+            if (scrollPosition >= maxScroll - 100) {
                 surpriseContainer.classList.add('active');
                 startHeartAnimation();
-                return; // Animasyonu durdur
+                return;
             }
-            
-            requestAnimationFrame(smoothScroll);
+
+            requestAnimationFrame(autoScroll);
         }
 
-        // Animasyonu başlat
-        requestAnimationFrame(smoothScroll);
-
-        // Kalp animasyonunu daha sık çalıştır
+        // Kalp animasyonunu başlat
         function startHeartAnimation() {
             if (!heartInterval) {
-                heartInterval = setInterval(createHeart, 50); // Daha sık kalp oluştur
+                heartInterval = setInterval(createHeart, 50);
             }
         }
+
+        // Animasyonları başlat
+        requestAnimationFrame(autoScroll);
 
         // Her resme animasyon gecikmesi ekle
         document.querySelectorAll('.gallery-item').forEach((item, index) => {
             item.style.animationDelay = `${index * 0.2}s`;
         });
-
-        // Mouse ile etkileşimi kaldırdık
-        surpriseTrigger.style.pointerEvents = 'none';
     </script>
 </body>
 </html> 
