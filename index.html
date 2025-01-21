@@ -260,7 +260,7 @@
 
         // Otomatik kaydırma için yeni kod
         let currentScroll = 0;
-        const scrollAmount = 1; // Her adımda kaydırma miktarı
+        const scrollAmount = 2; // Her adımda kaydırma miktarını 1'den 2'ye çıkardık
         
         function scrollGallery() {
             currentScroll += scrollAmount;
@@ -274,7 +274,7 @@
                 return; // Kaydırmayı durdur
             }
             
-            setTimeout(scrollGallery, 50); // Her 50ms'de bir kaydır
+            setTimeout(scrollGallery, 30); // Güncelleme süresini 50ms'den 30ms'ye düşürdük
         }
 
         // Sayfa yüklendiğinde başlat
