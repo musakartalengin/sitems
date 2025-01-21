@@ -170,7 +170,29 @@
                 opacity: 1;
             }
             100% { 
-                transform: translateY(-1000px) rotate(360deg) scale(0);
+                transform: translateY(-100vh) rotate(360deg) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatLeft {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(30vw, -100vh) rotate(360deg) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatRight {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-30vw, -100vh) rotate(360deg) scale(0);
                 opacity: 0;
             }
         }
@@ -216,41 +238,45 @@
             const heart = document.createElement('div');
             heart.innerHTML = heartSVG;
             heart.style.position = 'fixed';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.top = '100vh';
-            heart.style.opacity = Math.random();
-            heart.style.animation = `float ${Math.random() * 3 + 2}s linear`;
+            
+            // Rastgele sağ veya sol kenardan başlat
+            const isLeftSide = Math.random() < 0.5;
+            heart.style.left = isLeftSide ? '0' : '100vw';
+            heart.style.top = Math.random() * 100 + 'vh';
+            heart.style.opacity = Math.random() * 0.8 + 0.2;
+            
+            // Yatay hareket için yeni animasyon
+            const horizontalMove = isLeftSide ? 
+                `translateX(${Math.random() * 300}px)` : 
+                `translateX(-${Math.random() * 300}px)`;
+                
+            heart.style.animation = `
+                float ${Math.random() * 2 + 2}s ease-out
+            `;
+            
+            // Özel stil ekle
+            heart.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+            heart.style.transition = 'all 0.3s ease';
+            
             document.body.appendChild(heart);
 
             setTimeout(() => {
                 heart.remove();
-            }, 5000);
+            }, 3000);
         }
 
-        function startHeartAnimation() {
-            if (!heartInterval) {
-                heartInterval = setInterval(createHeart, 100);
-            }
-        }
-
-        function stopHeartAnimation() {
-            if (heartInterval) {
-                clearInterval(heartInterval);
-                heartInterval = null;
-            }
-        }
-
-        // Her resme animasyon gecikmesi ekle
-        document.querySelectorAll('.gallery-item').forEach((item, index) => {
-            item.style.animationDelay = `${index * 0.2}s`;
-        });
-
-        // Otomatik kaydırma ve sürpriz efekti
+        // Kaydırma animasyonunu düzeltme
         const gallery = document.querySelector('.gallery-container');
         let scrollAmount = 0;
-        const scrollSpeed = 5; // Hızı biraz artırdık
-        const scrollInterval = setInterval(() => {
-            scrollAmount += scrollSpeed;
+        const scrollSpeed = 3; // Hızı biraz azalttık
+        let lastTimestamp = null;
+
+        function smoothScroll(timestamp) {
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            const deltaTime = timestamp - lastTimestamp;
+            lastTimestamp = timestamp;
+
+            scrollAmount += scrollSpeed * (deltaTime / 16); // 60fps için normalize
             gallery.scrollLeft = scrollAmount;
             
             // Son resme yaklaşıldığında sürpriz efektini başlat
@@ -258,9 +284,26 @@
             if (scrollAmount >= maxScroll - 100) {
                 surpriseContainer.classList.add('active');
                 startHeartAnimation();
-                clearInterval(scrollInterval);
+                return; // Animasyonu durdur
             }
-        }, 80); // Güncelleme süresini azalttık
+            
+            requestAnimationFrame(smoothScroll);
+        }
+
+        // Animasyonu başlat
+        requestAnimationFrame(smoothScroll);
+
+        // Kalp animasyonunu daha sık çalıştır
+        function startHeartAnimation() {
+            if (!heartInterval) {
+                heartInterval = setInterval(createHeart, 50); // Daha sık kalp oluştur
+            }
+        }
+
+        // Her resme animasyon gecikmesi ekle
+        document.querySelectorAll('.gallery-item').forEach((item, index) => {
+            item.style.animationDelay = `${index * 0.2}s`;
+        });
 
         // Mouse ile etkileşimi kaldırdık
         surpriseTrigger.style.pointerEvents = 'none';
