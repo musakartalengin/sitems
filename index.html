@@ -9,102 +9,60 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #fff0f6 0%, #ffa7c4 100%);
+            background: black;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
-        .container {
-            max-width: 800px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .quote-container {
-            background: white;
-            padding: 40px;
-            margin: 20px;
-            border-radius: 20px;
-            box-shadow: 0 8px 16px rgba(255, 167, 196, 0.2);
-            min-height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .quote {
-            font-size: 28px;
-            color: #ff6b95;
-            margin: 0;
-            line-height: 1.6;
-        }
-
-        .word {
-            display: inline-block;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s, transform 0.5s;
-            margin-right: 8px;
-        }
-
-        .word.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        #final-message {
-            display: none;
-            font-size: 52px;
-            color: #ff4081;
-            text-align: center;
-            padding: 50px 0;
-            font-weight: bold;
-            animation: pulse 2s infinite;
-        }
-
-        #final-message.active {
-            display: block;
-        }
-
-        .continue-btn {
-            background: #ff4081;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: transform 0.2s, background 0.2s;
-        }
-
-        .continue-btn:hover {
-            background: #f50057;
-            transform: scale(1.05);
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        #particles-js {
+        .background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            display: none;
+            background: url('background.jpg') center center;
+            background-size: cover;
+            transform: scale(1);
+            transition: transform 8s ease-in-out;
         }
 
-        .container {
-            position: relative;
+        .background.zoomed {
+            transform: scale(1.5);
+        }
+
+        .initial-text {
+            position: fixed;
+            color: white;
+            font-size: 48px;
+            text-align: center;
             z-index: 2;
+            opacity: 1;
+            transition: opacity 2s ease-out;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .initial-text.hidden {
+            opacity: 0;
+        }
+
+        .final-text {
+            position: fixed;
+            color: white;
+            font-size: 72px;
+            text-align: center;
+            z-index: 2;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 1s ease-in, transform 1s ease-in;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .final-text.visible {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .heart {
@@ -112,75 +70,24 @@
             width: 20px;
             height: 20px;
             position: absolute;
+            z-index: 3;
         }
 
         @keyframes float {
             0% { transform: translateY(0) rotate(0deg); }
             100% { transform: translateY(-1000px) rotate(360deg); }
         }
-
-        .side-decoration {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 120px;
-            font-weight: bold;
-            color: rgba(255, 64, 129, 0.1);
-            writing-mode: vertical-rl;
-            text-orientation: upright;
-            letter-spacing: 20px;
-            pointer-events: none;
-            font-family: 'Segoe UI', sans-serif;
-            text-shadow: 2px 2px 4px rgba(255, 64, 129, 0.2);
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        .left-decoration {
-            left: 20px;
-        }
-
-        .right-decoration {
-            right: 20px;
-            transform: translateY(-50%) rotate(180deg);
-        }
-
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px rgba(255, 64, 129, 0.2);
-                color: rgba(255, 64, 129, 0.1);
-            }
-            to {
-                text-shadow: 0 0 20px rgba(255, 64, 129, 0.4);
-                color: rgba(255, 64, 129, 0.2);
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="side-decoration left-decoration">MERVE</div>
-    <div class="side-decoration right-decoration">MERVE</div>
-    <div id="particles-js"></div>
-    <div class="container">
-        <div class="quote-container">
-            <p class="quote">
-                <span class="word">Ah</span>
-                <span class="word">o</span>
-                <span class="word">gözlerin;</span>
-                <span class="word">ruhsatsız</span>
-                <span class="word">silah</span>
-                <span class="word">taşımak</span>
-                <span class="word">değil de</span>
-                <span class="word">ne?</span>
-        </div>
-        <div id="final-message">Günaydın Fıstık</div>
-        <button class="continue-btn">Devam Et</button>
-        <audio id="background-music" style="display: none;">
-            <source src="music_new.mp3?v=1" type="audio/mpeg">
-        </audio>
-    </div>
+    <div class="background"></div>
+    <div class="initial-text">Manzara mı o?</div>
+    <div class="final-text">Merve</div>
 
     <script>
-        // SVG kalp şablonu
+        const background = document.querySelector('.background');
+        const initialText = document.querySelector('.initial-text');
+        const finalText = document.querySelector('.final-text');
         const heartSVG = `<svg class="heart" viewBox="0 0 32 32"><path d="M16 28.8c-.3 0-.5-.1-.7-.3l-11.8-12c-2.9-2.9-2.9-7.7 0-10.6C5 4.4 7 3.5 9.1 3.5c2.1 0 4.1.8 5.6 2.3L16 7.1l1.3-1.3c2.9-2.9 7.7-2.9 10.6 0 1.4 1.4 2.3 3.4 2.3 5.6s-.8 4.1-2.3 5.6L16.7 28.5c-.2.2-.4.3-.7.3z"/></svg>`;
 
         function createHeart() {
@@ -202,35 +109,19 @@
             setInterval(createHeart, 100);
         }
 
-        const words = document.querySelectorAll('.word');
-        const finalMessage = document.getElementById('final-message');
-        const continueBtn = document.querySelector('.continue-btn');
-        const quoteContainer = document.querySelector('.quote-container');
-        const backgroundMusic = document.getElementById('background-music');
-        let currentWordIndex = 0;
+        // Başlangıç animasyonu
+        setTimeout(() => {
+            initialText.classList.add('hidden');
+        }, 3000);
 
-        function showNextWord() {
-            if (currentWordIndex < words.length) {
-                words[currentWordIndex].classList.add('visible');
-                currentWordIndex++;
-            } else {
-                // Tüm kelimeler gösterildi, final mesajını göster
-                quoteContainer.style.display = 'none';
-                finalMessage.classList.add('active');
-                continueBtn.style.display = 'none';
-                // Müziği çal
-                backgroundMusic.play().catch(error => {
-                    console.log("Müzik çalınamadı:", error);
-                });
-                // Kalp animasyonunu başlat
-                startHeartAnimation();
-            }
-        }
+        setTimeout(() => {
+            background.classList.add('zoomed');
+        }, 4000);
 
-        continueBtn.addEventListener('click', showNextWord);
-
-        // İlk kelimeyi göster
-        showNextWord();
+        setTimeout(() => {
+            finalText.classList.add('visible');
+            startHeartAnimation();
+        }, 8000);
     </script>
 </body>
 </html> 
