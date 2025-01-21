@@ -231,9 +231,50 @@
         const surpriseTrigger = document.querySelector('.surprise-trigger');
         const surpriseContainer = document.querySelector('.surprise-container');
         const gallery = document.querySelector('.gallery-container');
+        const galleryItems = document.querySelectorAll('.gallery-item');
         const heartSVG = `<svg class="heart" viewBox="0 0 32 32"><path d="M16 28.8c-.3 0-.5-.1-.7-.3l-11.8-12c-2.9-2.9-2.9-7.7 0-10.6C5 4.4 7 3.5 9.1 3.5c2.1 0 4.1.8 5.6 2.3L16 7.1l1.3-1.3c2.9-2.9 7.7-2.9 10.6 0 1.4 1.4 2.3 3.4 2.3 5.6s-.8 4.1-2.3 5.6L16.7 28.5c-.2.2-.4.3-.7.3z"/></svg>`;
 
         let heartInterval = null;
+        let currentImageIndex = 0;
+
+        // Başlangıçta tüm resimleri gizle
+        galleryItems.forEach(item => {
+            item.style.display = 'none';
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8)';
+            item.style.transition = 'all 1s ease';
+        });
+
+        function showNextImage() {
+            if (currentImageIndex > 0) {
+                // Önceki resmi küçült
+                galleryItems[currentImageIndex - 1].style.transform = 'scale(0.8)';
+                galleryItems[currentImageIndex - 1].style.opacity = '0.5';
+            }
+
+            if (currentImageIndex < galleryItems.length) {
+                const currentItem = galleryItems[currentImageIndex];
+                currentItem.style.display = 'block';
+                
+                // Kısa bir gecikme ile görünür yap
+                setTimeout(() => {
+                    currentItem.style.opacity = '1';
+                    currentItem.style.transform = 'scale(1)';
+                }, 100);
+
+                // Son resme geldiysek
+                if (currentImageIndex === galleryItems.length - 1) {
+                    setTimeout(() => {
+                        surpriseContainer.classList.add('active');
+                        startHeartAnimation();
+                    }, 1000);
+                    return;
+                }
+
+                currentImageIndex++;
+                setTimeout(showNextImage, 2000); // Her 2 saniyede bir sonraki resim
+            }
+        }
 
         function createHeart() {
             const heart = document.createElement('div');
@@ -258,36 +299,15 @@
             }, 3000);
         }
 
-        // Otomatik kaydırma için yeni kod
-        const scrollSpeed = 15; // Çok daha hızlı kaydırma
-        
-        function smoothScroll() {
-            if (gallery.scrollLeft >= gallery.scrollWidth - gallery.clientWidth - 100) {
-                surpriseContainer.classList.add('active');
-                startHeartAnimation();
-                return;
-            }
-            
-            gallery.scrollLeft += scrollSpeed;
-            requestAnimationFrame(smoothScroll);
-        }
-
-        // Sayfa yüklendiğinde başlat
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                requestAnimationFrame(smoothScroll);
-            }, 500); // Daha kısa bekleme süresi
-        });
-
         function startHeartAnimation() {
             if (!heartInterval) {
                 heartInterval = setInterval(createHeart, 50);
             }
         }
 
-        // Her resme animasyon gecikmesi ekle
-        document.querySelectorAll('.gallery-item').forEach((item, index) => {
-            item.style.animationDelay = `${index * 0.2}s`;
+        // Sayfa yüklendiğinde başlat
+        window.addEventListener('load', () => {
+            setTimeout(showNextImage, 1000);
         });
     </script>
 </body>
