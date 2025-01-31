@@ -3,162 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hikaye</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Gizli Mesaj</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Dancing Script', cursive;
             min-height: 100vh;
-            overflow: hidden;
-            color: white;
+            background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        .story-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
             overflow: hidden;
         }
 
-        .story-slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1.5s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        .message-container {
             text-align: center;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        .story-slide.active {
-            opacity: 1;
-        }
-
-        .story-text {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px 40px;
-            border-radius: 15px;
-            max-width: 80%;
-            font-size: 24px;
-            line-height: 1.6;
-            transform: translateY(50px);
-            opacity: 0;
-            transition: all 1s ease 0.5s;
-            z-index: 5;
             position: relative;
         }
 
-        .story-slide.active .story-text {
-            transform: translateY(0);
-            opacity: 1;
+        .start-button {
+            font-size: 24px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #FF69B4;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .number {
-            font-size: 120px;
-            font-family: 'Playfair Display', serif;
-            position: absolute;
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .message {
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            font-size: 36px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             opacity: 0;
             transition: all 1s ease;
-            color: white;
-            text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            z-index: 5;
+            white-space: nowrap;
         }
 
-        .story-slide.active .number {
+        .message.active {
             opacity: 1;
-            animation: pulseNumber 2s ease-in-out infinite;
+            animation: fadeInScale 1s ease forwards;
         }
 
-        @keyframes pulseNumber {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
-            100% { transform: translate(-50%, -50%) scale(1); }
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
         }
 
-        .slide-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 3;
+        .heart {
+            position: fixed;
+            font-size: 20px;
+            color: white;
+            pointer-events: none;
+            animation: floatHeart 3s ease-in-out infinite;
+            opacity: 0;
         }
 
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
-            z-index: 4;
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="story-container">
-        <div class="story-slide">
-            <img src="https://cdn.pixabay.com/photo/2018/04/06/00/25/nature-3294681_1280.jpg" class="slide-bg" alt="background">
-            <div class="overlay"></div>
-            <div class="story-text">Gece tüm gizemiyle çekilip sabahın ilk ışıkları belirdiğinde,</div>
-        </div>
-        <div class="story-slide">
-            <img src="https://cdn.pixabay.com/photo/2017/11/07/20/43/christmas-tree-2928142_1280.jpg" class="slide-bg" alt="background">
-            <div class="overlay"></div>
-            <div class="story-text">genç kalbinde taşıdığı özlemi yine hissetti.</div>
-        </div>
-        <div class="story-slide">
-            <img src="https://cdn.pixabay.com/photo/2016/09/21/04/46/barley-field-1684052_1280.jpg" class="slide-bg" alt="background">
-            <div class="overlay"></div>
-            <div class="story-text">Ufka bakarken, sanki güneşin doğuşuyla birlikte yüreğindeki sevgi de aydınlanıyordu.</div>
-        </div>
-        <div class="story-slide">
-            <img src="https://cdn.pixabay.com/photo/2018/08/12/15/29/hintersee-3601004_1280.jpg" class="slide-bg" alt="background">
-            <div class="overlay"></div>
-            <div class="story-text">Hafif bir rüzgâr yüzünü okşarken, gülümsedi ve fısıldadı:</div>
-        </div>
-        <div class="story-slide">
-            <img src="background.jpeg" class="slide-bg" alt="background">
-            <div class="overlay"></div>
-            <div class="story-text">"Günaydın prenses."</div>
-        </div>
+    <div class="message-container">
+        <button class="start-button">💌 Mesajı Göster</button>
     </div>
 
     <script>
-        const slides = document.querySelectorAll('.story-slide');
-        let currentSlide = 0;
+        const messages = [
+            "Su içtim testiden",
+            "Sensin beni mest eden",
+            "Hayırlı cumalar",
+            "Prenses ❤️"
+        ];
 
-        function showSlide(index) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            slides[index].classList.add('active');
+        let currentMessage = 0;
+        let activeMessage = null;
+        
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 3000);
         }
 
-        function nextSlide() {
-            if (currentSlide < slides.length - 1) {
-                currentSlide++;
-                showSlide(currentSlide);
-                setTimeout(nextSlide, 4000);
+        function showMessage() {
+            if (activeMessage) {
+                activeMessage.remove();
+            }
+
+            if (currentMessage < messages.length) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.textContent = messages[currentMessage];
+                document.body.appendChild(messageDiv);
+                
+                setTimeout(() => {
+                    messageDiv.classList.add('active');
+                }, 100);
+
+                activeMessage = messageDiv;
+                currentMessage++;
+
+                // Son mesajda kalpler başlasın
+                if (currentMessage === messages.length) {
+                    setInterval(createHeart, 300);
+                } else {
+                    setTimeout(showMessage, 2000);
+                }
             }
         }
 
-        window.addEventListener('load', () => {
-            showSlide(0);
-            setTimeout(nextSlide, 2000);
+        document.querySelector('.start-button').addEventListener('click', function() {
+            this.style.display = 'none';
+            showMessage();
         });
     </script>
 </body>
