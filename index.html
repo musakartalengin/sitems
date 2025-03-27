@@ -25,6 +25,7 @@
             width: 100%;
             height: 80px;
             overflow: hidden;
+            z-index: 1;
         }
 
         .grass {
@@ -41,8 +42,9 @@
             bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
-            width: 300px;
-            height: 500px;
+            width: 400px;
+            height: 600px;
+            z-index: 2;
         }
 
         .flower {
@@ -56,8 +58,8 @@
 
         .stem {
             position: absolute;
-            width: 8px;
-            height: 400px;
+            width: 10px;
+            height: 500px;
             background: #32CD32;
             bottom: 0;
             left: 50%;
@@ -66,37 +68,37 @@
 
         .leaf {
             position: absolute;
-            width: 60px;
-            height: 100px;
+            width: 80px;
+            height: 120px;
             background: #32CD32;
             border-radius: 50% 50% 50% 50%;
             transform-origin: center;
-            bottom: 150px;
+            bottom: 200px;
         }
 
         .leaf.left {
-            left: -50px;
+            left: -70px;
             transform: rotate(-15deg);
         }
 
         .leaf.right {
-            right: -50px;
+            right: -70px;
             transform: rotate(15deg);
         }
 
         .petals {
             position: absolute;
-            bottom: 380px;
+            bottom: 480px;
             left: 50%;
             transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
+            width: 300px;
+            height: 300px;
         }
 
         .petal {
             position: absolute;
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             background: #FFC0CB;
             border-radius: 50%;
             transform-origin: center;
@@ -104,20 +106,20 @@
             animation: showPetal 1s ease-out forwards;
         }
 
-        .petal:nth-child(1) { top: 0; left: 50px; animation-delay: 3s; }
-        .petal:nth-child(2) { top: 50px; left: 100px; animation-delay: 3.2s; }
-        .petal:nth-child(3) { top: 100px; left: 50px; animation-delay: 3.4s; }
-        .petal:nth-child(4) { top: 50px; left: 0; animation-delay: 3.6s; }
-        .petal:nth-child(5) { top: 50px; left: 50px; animation-delay: 3.8s; }
+        .petal:nth-child(1) { top: 0; left: 75px; animation-delay: 3s; }
+        .petal:nth-child(2) { top: 75px; left: 150px; animation-delay: 3.2s; }
+        .petal:nth-child(3) { top: 150px; left: 75px; animation-delay: 3.4s; }
+        .petal:nth-child(4) { top: 75px; left: 0; animation-delay: 3.6s; }
+        .petal:nth-child(5) { top: 75px; left: 75px; animation-delay: 3.8s; }
 
         .flower-center {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 90px;
+            height: 90px;
             background: #FFD700;
             border-radius: 50%;
-            top: 50px;
-            left: 70px;
+            top: 75px;
+            left: 105px;
             opacity: 0;
             animation: showCenter 1s ease-out 4s forwards;
         }
@@ -146,16 +148,17 @@
 
         .message {
             position: fixed;
-            top: 15%;
+            top: 50px;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             font-family: 'Dancing Script', cursive;
-            font-size: 64px;
+            font-size: 72px;
             color: white;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
             opacity: 0;
             animation: fadeInMessage 2s ease 4.5s forwards;
-            z-index: 10;
+            z-index: 3;
+            white-space: nowrap;
         }
 
         @keyframes growFlower {
@@ -172,11 +175,11 @@
         @keyframes fadeInMessage {
             0% {
                 opacity: 0;
-                transform: translate(-50%, -30%);
+                transform: translate(-50%, -20px);
             }
             100% {
                 opacity: 1;
-                transform: translate(-50%, -50%);
+                transform: translate(-50%, 0);
             }
         }
 
@@ -187,6 +190,7 @@
             background: #FFD700;
             border-radius: 50%;
             animation: sparkle 1.5s ease-in-out infinite;
+            z-index: 2;
         }
 
         @keyframes sparkle {
