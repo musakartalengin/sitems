@@ -23,29 +23,26 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 120px;
+            height: 80px;
             overflow: hidden;
         }
 
         .grass {
             position: absolute;
             bottom: 0;
-            width: 40px;
-            height: 100px;
-            background: linear-gradient(to top, #228B22, #32CD32);
+            width: 30px;
+            height: 80px;
+            background: #32CD32;
             clip-path: polygon(50% 0, 0% 100%, 100% 100%);
         }
 
         .flower-container {
             position: fixed;
-            bottom: 0;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
-            width: 50vw;
-            height: 90vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
+            width: 300px;
+            height: 500px;
         }
 
         .flower {
@@ -59,38 +56,37 @@
 
         .stem {
             position: absolute;
-            width: 12px;
-            height: 60%;
-            background: linear-gradient(to right, #2E8B57, #3CB371);
-            bottom: 120px;
+            width: 8px;
+            height: 400px;
+            background: #32CD32;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            border-radius: 4px;
         }
 
         .leaf {
             position: absolute;
-            width: 80px;
-            height: 120px;
-            background: linear-gradient(45deg, #2E8B57, #3CB371);
-            border-radius: 100% 0;
-            transform-origin: bottom;
-            bottom: 40%;
+            width: 60px;
+            height: 100px;
+            background: #32CD32;
+            border-radius: 50% 50% 50% 50%;
+            transform-origin: center;
+            bottom: 150px;
         }
 
         .leaf.left {
-            left: -60px;
-            transform: rotate(-30deg);
+            left: -50px;
+            transform: rotate(-15deg);
         }
 
         .leaf.right {
-            right: -60px;
-            transform: rotate(30deg) scaleX(-1);
+            right: -50px;
+            transform: rotate(15deg);
         }
 
         .petals {
             position: absolute;
-            bottom: 60%;
+            bottom: 380px;
             left: 50%;
             transform: translateX(-50%);
             width: 200px;
@@ -99,53 +95,58 @@
 
         .petal {
             position: absolute;
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(45deg, #FF69B4, #FFB6C1);
+            width: 100px;
+            height: 100px;
+            background: #FFC0CB;
             border-radius: 50%;
-            transform-origin: bottom center;
-            animation: openPetal 2s ease-out forwards;
+            transform-origin: center;
             opacity: 0;
+            animation: showPetal 1s ease-out forwards;
         }
 
-        @keyframes openPetal {
-            0% {
-                transform: scale(0.1) rotate(0deg);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1) rotate(var(--rotation)) translateY(-40px);
-                opacity: 1;
-            }
-        }
-
-        .petal:nth-child(1) { --rotation: 0deg; animation-delay: 3s; }
-        .petal:nth-child(2) { --rotation: 72deg; animation-delay: 3.2s; }
-        .petal:nth-child(3) { --rotation: 144deg; animation-delay: 3.4s; }
-        .petal:nth-child(4) { --rotation: 216deg; animation-delay: 3.6s; }
-        .petal:nth-child(5) { --rotation: 288deg; animation-delay: 3.8s; }
+        .petal:nth-child(1) { top: 0; left: 50px; animation-delay: 3s; }
+        .petal:nth-child(2) { top: 50px; left: 100px; animation-delay: 3.2s; }
+        .petal:nth-child(3) { top: 100px; left: 50px; animation-delay: 3.4s; }
+        .petal:nth-child(4) { top: 50px; left: 0; animation-delay: 3.6s; }
+        .petal:nth-child(5) { top: 50px; left: 50px; animation-delay: 3.8s; }
 
         .flower-center {
             position: absolute;
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, #FFD700, #FFA500);
+            width: 60px;
+            height: 60px;
+            background: #FFD700;
             border-radius: 50%;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            top: 50px;
+            left: 70px;
             opacity: 0;
             animation: showCenter 1s ease-out 4s forwards;
         }
 
+        @keyframes showPetal {
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         @keyframes showCenter {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .message {
             position: fixed;
-            top: 20%;
+            top: 15%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Dancing Script', cursive;
@@ -154,6 +155,7 @@
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
             opacity: 0;
             animation: fadeInMessage 2s ease 4.5s forwards;
+            z-index: 10;
         }
 
         @keyframes growFlower {
@@ -180,9 +182,9 @@
 
         .sparkle {
             position: absolute;
-            width: 3px;
-            height: 3px;
-            background: #FFB6C1;
+            width: 2px;
+            height: 2px;
+            background: #FFD700;
             border-radius: 50%;
             animation: sparkle 1.5s ease-in-out infinite;
         }
@@ -224,7 +226,7 @@
     <script>
         function createSparkles() {
             const container = document.querySelector('.flower-container');
-            for (let i = 0; i < 40; i++) {
+            for (let i = 0; i < 30; i++) {
                 const sparkle = document.createElement('div');
                 sparkle.className = 'sparkle';
                 sparkle.style.left = Math.random() * 100 + '%';
@@ -236,12 +238,12 @@
 
         function createGrass() {
             const container = document.querySelector('.grass-container');
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 40; i++) {
                 const grass = document.createElement('div');
                 grass.className = 'grass';
-                grass.style.left = (i * 2) + '%';
-                grass.style.height = 80 + Math.random() * 40 + 'px';
-                grass.style.width = '20px';
+                grass.style.left = (i * 2.5) + '%';
+                grass.style.height = '80px';
+                grass.style.width = '30px';
                 container.appendChild(grass);
             }
         }
