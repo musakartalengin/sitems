@@ -34,60 +34,99 @@
 
         .stem {
             position: absolute;
-            width: 4px;
-            height: 200px;
-            background: #4CAF50;
+            width: 8px;
+            height: 300px;
+            background: linear-gradient(to right, #2E8B57, #3CB371);
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
+            border-radius: 4px;
         }
 
         .leaf {
             position: absolute;
-            width: 30px;
-            height: 60px;
-            background: #4CAF50;
-            border-radius: 0 50% 0 50%;
+            width: 50px;
+            height: 80px;
+            background: linear-gradient(45deg, #2E8B57, #3CB371);
+            border-radius: 50% 50% 0 50%;
             transform-origin: bottom;
+            bottom: 100px;
         }
 
         .leaf.left {
-            left: -20px;
-            transform: rotate(-30deg);
+            left: -40px;
+            transform: rotate(-45deg);
         }
 
         .leaf.right {
-            right: -20px;
-            transform: rotate(30deg) scaleX(-1);
+            right: -40px;
+            transform: rotate(45deg) scaleX(-1);
         }
 
         .petals {
             position: absolute;
-            bottom: 200px;
+            bottom: 300px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .petal {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            background: #40E0D0;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #40E0D0, #48D1CC);
+            border-radius: 50% 50% 50% 50%;
+            transform-origin: center bottom;
+            animation: openPetal 2s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes openPetal {
+            0% {
+                transform: scale(0.1) rotate(0deg);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) rotate(var(--rotation));
+                opacity: 1;
+            }
+        }
+
+        .petal:nth-child(1) { --rotation: 0deg; animation-delay: 3s; }
+        .petal:nth-child(2) { --rotation: 72deg; animation-delay: 3.2s; }
+        .petal:nth-child(3) { --rotation: 144deg; animation-delay: 3.4s; }
+        .petal:nth-child(4) { --rotation: 216deg; animation-delay: 3.6s; }
+        .petal:nth-child(5) { --rotation: 288deg; animation-delay: 3.8s; }
+
+        .flower-center {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #FFD700, #FFA500);
             border-radius: 50%;
-            transform-origin: center;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: showCenter 1s ease-out 4s forwards;
+        }
+
+        @keyframes showCenter {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         .message {
             position: fixed;
-            top: 30%;
+            top: 20%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Dancing Script', cursive;
-            font-size: 48px;
+            font-size: 64px;
             color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
             opacity: 0;
-            animation: fadeInMessage 2s ease 3s forwards;
+            animation: fadeInMessage 2s ease 4.5s forwards;
         }
 
         @keyframes growFlower {
@@ -140,11 +179,12 @@
     <div class="flower-container">
         <div class="flower">
             <div class="petals">
-                <div class="petal" style="transform: rotate(0deg) translate(0, -20px)"></div>
-                <div class="petal" style="transform: rotate(72deg) translate(0, -20px)"></div>
-                <div class="petal" style="transform: rotate(144deg) translate(0, -20px)"></div>
-                <div class="petal" style="transform: rotate(216deg) translate(0, -20px)"></div>
-                <div class="petal" style="transform: rotate(288deg) translate(0, -20px)"></div>
+                <div class="petal"></div>
+                <div class="petal"></div>
+                <div class="petal"></div>
+                <div class="petal"></div>
+                <div class="petal"></div>
+                <div class="flower-center"></div>
             </div>
             <div class="stem">
                 <div class="leaf left"></div>
@@ -156,7 +196,7 @@
     <script>
         function createSparkles() {
             const container = document.querySelector('.flower-container');
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 30; i++) {
                 const sparkle = document.createElement('div');
                 sparkle.className = 'sparkle';
                 sparkle.style.left = Math.random() * 100 + '%';
@@ -169,5 +209,4 @@
         window.onload = createSparkles;
     </script>
 </body>
-</html> 
 </html> 
