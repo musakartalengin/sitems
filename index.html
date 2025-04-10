@@ -86,7 +86,8 @@
             color: white;
             text-shadow: 2px 2px 8px rgba(255, 192, 203, 0.7); /* Pembe gölge */
             opacity: 0;
-            animation: fadeInMessage 2s ease 2.5s forwards; /* Peri çıktıktan sonra */
+            /* animation: fadeInMessage 2s ease 2.5s forwards; */ /* Animasyonu JS ile tetikleyeceğiz */
+            transition: opacity 1s ease-out 0.5s; /* Yumuşak geçiş için, peri çıktıktan biraz sonra başlasın */
             z-index: 20;
             white-space: nowrap;
             text-align: center;
@@ -191,6 +192,7 @@
         function openChest() {
             chest.classList.add('open');
             chestPrompt.classList.remove('visible'); // Yazıyı gizle
+            message.style.opacity = 1; // Mesajı görünür yap
             // Tıklandıktan sonra tekrar tıklanmasını engelle
             chest.removeEventListener('click', openChest);
             chest.style.cursor = 'default';
