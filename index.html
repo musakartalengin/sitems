@@ -81,10 +81,10 @@
             top: 50px;
             left: 50%;
             transform: translateX(-50%);
-            font-family: 'Dancing Script', cursive;
-            font-size: 5vw; /* Ekran boyutuna göre ayarla */
+            font-family: 'Arial', sans-serif; /* Daha okunaklı font */
+            font-size: 4vw; /* Font değiştiği için boyutu biraz ayarlayalım */
             color: white;
-            text-shadow: 2px 2px 8px rgba(255, 192, 203, 0.7); /* Pembe gölge */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Daha net gölge */
             opacity: 0;
             /* animation: fadeInMessage 2s ease 2.5s forwards; */ /* Animasyonu JS ile tetikleyeceğiz */
             transition: opacity 1s ease-out 0.5s; /* Yumuşak geçiş için, peri çıktıktan biraz sonra başlasın */
@@ -173,7 +173,7 @@
         </div>
         <div class="chest-prompt" id="chestPrompt">Sihirli Sandığı Aç</div>
     </div>
-    <div class="message" id="message">İyi geceler prenses rüyana gelicem 😉</div>
+    <div class="message" id="message">Günaydın prenses bugün rüyamda seni gördüm 😉</div>
 
     <script>
         const chest = document.getElementById('chest');
