@@ -34,7 +34,7 @@
             position: absolute;
             bottom: -200px; /* Başlangıçta ekranın altında */
             left: 50%;
-            transform-style: preserve-3d;
+            /* transform-style: preserve-3d; Kaldırıldı */
             transform: translateX(-50%) scale(0.1) rotateY(30deg); /* Başlangıçta küçük ve uzakta */
             opacity: 0;
             animation: approachChest 3s ease-out 0.5s forwards;
@@ -43,51 +43,54 @@
             position: relative; /* İçerik konumlandırması için */
         }
 
-        .inner-chest {
-            width: 80px; /* Daha küçük */
-            height: 50px;
-            background: #FFD700; /* Altın rengi */
-            border: 3px solid #B8860B; /* Koyu altın çerçeve */
-            border-radius: 5px;
+        .gold-chest { /* .inner-chest yerine .gold-chest */
+            width: 100px; /* Biraz daha büyük yapalım */
+            height: 70px;
+            background: linear-gradient(to bottom, #FFFACD, #FFD700); /* Altın gradyan */
+            border: 4px solid #B8860B; /* Koyu altın çerçeve */
+            border-radius: 8px;
             position: absolute;
-            bottom: 10px; /* Ana sandığın içinde */
+            bottom: 20px; /* Pembe sandığın son konumuyla aynı */
             left: 50%;
-            transform: translateX(-50%) scale(0); /* Başlangıçta gizli */
-            opacity: 0;
-            transition: transform 0.5s ease-out 0.3s, opacity 0.5s ease-out 0.3s; /* Gecikmeli çıkış */
+            transform: translateX(-50%); /* scale(0) kaldırıldı, sadece merkezleme */
+            opacity: 0; /* Başlangıçta gizli */
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out; /* Transition */
             cursor: pointer;
-            z-index: 11;
+            z-index: 11; /* Pembe sandığın üzerinde */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
-        .inner-chest-lid {
+        .gold-chest.visible { /* .visible sınıfını geri ekle */
+             opacity: 1;
+             transform: translateX(-50%) scale(1);
+        }
+
+        .gold-chest-lid { /* .inner-chest-lid yerine */
              width: 100%;
-             height: 15px;
-             background: #F0E68C; /* Açık altın */
-             border: 3px solid #B8860B;
+             height: 20px; /* Biraz daha kalın */
+             background: linear-gradient(to bottom, #FFFACD, #F0E68C); /* Açık altın gradyan */
+             border: 4px solid #B8860B;
              border-bottom: none;
-             border-radius: 5px 5px 0 0;
+             border-radius: 8px 8px 0 0;
              position: absolute;
-             top: -15px;
-             left: -3px;
+             top: -20px;
+             left: -4px; /* Kenarlıkları hizala */
              transform-origin: bottom center;
              transition: transform 0.4s ease-in-out;
         }
 
-        .magic-chest.open .inner-chest {
-            transform: translateX(-50%) scale(1) translateY(-20px); /* Yukarı çıkar */
-            opacity: 1;
-        }
+        /* .magic-chest.open .inner-chest kuralı artık geçerli değil */
 
-        .inner-chest.open .inner-chest-lid {
+        .gold-chest.open .gold-chest-lid { /* .inner-chest.open yerine */
              transform: rotateX(-120deg);
         }
 
 
-        .chest-lid {
+        .chest-lid { /* Pembe sandık kapağı */
             width: 100%;
             height: 30px;
-            background: #FFC0CB; /* Daha açık pembe kapak */
-            border: 5px solid #FF69B4;
+            background: linear-gradient(to bottom, #FFFAFA, #FFC0CB); /* Pembe gradyan */
+            border: 5px solid #FF69B4; /* Koyu Pembe çerçeve */
             border-bottom: none;
             border-radius: 10px 10px 0 0;
             position: absolute;
@@ -108,37 +111,56 @@
 
         .message {
             position: fixed;
-            top: 50px;
+            top: 50%; /* Ortaya alalım */
             left: 50%;
-            transform: translateX(-50%);
-            font-family: 'Arial', sans-serif; /* Daha okunaklı font */
-            font-size: 4vw; /* Font değiştiği için boyutu biraz ayarlayalım */
-            color: white;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Daha net gölge */
+            transform: translate(-50%, -50%); /* Tam ortalama */
+            font-family: 'Arial', sans-serif;
+            font-weight: bold; /* Kalın yazı */
+            font-size: 5vw; /* Biraz daha büyük */
+            color: #FFFFE0; /* Açık sarı yazı */
+            background-color: rgba(220, 20, 60, 0.8); /* Yarı şeffaf kırmızı arka plan */
+            padding: 15px 30px; /* İç boşluk */
+            border-radius: 10px; /* Köşe yuvarlama */
+            border: 2px solid #FFFFE0; /* Açık sarı çerçeve */
+            text-shadow: 1px 1px 2px black; /* Yazı gölgesi */
             opacity: 0;
-            transition: opacity 1s ease-out 0.5s; /* Yumuşak geçiş için */
-            z-index: 20;
+            transition: opacity 0.5s ease-out; /* Daha hızlı belirmesi için */
+            z-index: 60; /* Her şeyin üzerinde */
             white-space: nowrap;
             text-align: center;
         }
 
-        .chest-prompt {
+        .chest-prompt { /* Yazı stilleri */
             position: absolute;
-            bottom: 15px; /* Sandığın biraz altına */
             left: 50%;
             transform: translateX(-50%);
             color: white;
             font-family: 'Arial', sans-serif;
             font-size: 14px;
             text-shadow: 1px 1px 2px black;
-            opacity: 0; /* Başlangıçta gizli */
+            opacity: 0;
             transition: opacity 0.5s ease-in-out;
             z-index: 15;
-            pointer-events: none; /* Yazının tıklamayı engellememesi için */
+            pointer-events: none;
         }
 
-        .magic-chest:not(.open) + .chest-prompt.visible {
-             opacity: 1; /* Sandık yaklaşınca görünür yap */
+        #pinkChestPrompt {
+             bottom: 0px; /* Pembe sandığın hemen altı */
+        }
+
+        #goldChestPrompt {
+             bottom: 0px; /* Altın sandığın hemen altı */
+        }
+
+        .chest-prompt.visible {
+             opacity: 1;
+        }
+
+
+        .magic-chest.hidden, .gold-chest.hidden {
+            opacity: 0 !important; /* Kaybolma efekti için !important gerekebilir */
+            pointer-events: none; /* Kaybolunca tıklanmasın */
+            transition: opacity 0.5s ease-out;
         }
 
         .crack-overlay {
@@ -158,26 +180,41 @@
             opacity: 1;
         }
 
+        @keyframes shake { /* Tıklama animasyonu */
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(-2deg); }
+            75% { transform: translateX(-50%) rotate(2deg); }
+        }
+
+        .shaking {
+            animation: shake 0.3s ease-in-out;
+        }
+
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .message.blinking {
+            animation: blink 1s infinite;
+        }
+
 
         /* Animasyonlar */
-        /* Peri kızı animasyonları artık gereksiz */
-        /*
-        @keyframes revealFairy { ... }
-        @keyframes flyAround { ... }
-        */
-        @keyframes approachChest {
+        @keyframes approachChest { /* Pembe sandığın aşağıdan gelmesi */
             0% {
                 bottom: -200px;
                 transform: translateX(-50%) scale(0.1) rotateY(30deg);
                 opacity: 0;
             }
             70% {
-                 bottom: 50px;
+                 bottom: 20px; /* Daha aşağıda dursun */
                  transform: translateX(-50%) scale(1) rotateY(-10deg);
                  opacity: 1;
             }
             100% {
-                bottom: 50px;
+                bottom: 20px; /* Daha aşağıda dursun */
                 transform: translateX(-50%) scale(1) rotateY(0deg);
                 opacity: 1;
             }
@@ -220,61 +257,82 @@
     <div class="scene">
         <div class="magic-chest" id="chest">
             <div class="chest-lid"></div>
-             <div class="inner-chest" id="innerChest">
-                 <div class="inner-chest-lid"></div>
-             </div>
-            <!-- <img src="peri-kizi.png" alt="Peri Kızı" class="fairy-girl" id="fairy"> --> <!-- Peri kızı kaldırıldı -->
+            <!-- İçteki sandık div'i buradan kaldırıldı -->
+            <!-- <img src="peri-kizi.png" alt="Peri Kızı" class="fairy-girl" id="fairy"> -->
         </div>
-        <div class="chest-prompt" id="chestPrompt">Sihirli Sandığı Aç</div>
+        <div class="chest-prompt" id="pinkChestPrompt">Sihirli Sandığı Aç</div> <!-- Pembe sandık yazısı -->
+         <div class="gold-chest" id="goldChest"> <!-- innerChest yerine goldChest -->
+             <div class="gold-chest-lid"></div>
+         </div>
+        <div class="chest-prompt" id="goldChestPrompt">Sihirli Sandığı Aç</div> <!-- Altın sandık yazısı -->
     </div>
      <div class="crack-overlay" id="crackOverlay"></div>
-    <div class="message" id="message">Güzelliğinizle ekranı çatlattınız prenses!</div> <!-- Yeni mesaj -->
+    <div class="message" id="message">Güzelliğinizden dolayı ekranı çatlattınız!</div> <!-- Yeni mesaj -->
 
     <script>
-        const chest = document.getElementById('chest');
-        const innerChest = document.getElementById('innerChest');
+        const pinkChest = document.getElementById('chest');
+        const goldChest = document.getElementById('goldChest');
+        const pinkChestPrompt = document.getElementById('pinkChestPrompt');
+        const goldChestPrompt = document.getElementById('goldChestPrompt');
         const message = document.getElementById('message');
-        const chestPrompt = document.getElementById('chestPrompt');
         const crackOverlay = document.getElementById('crackOverlay');
 
-        // Sandık animasyonu bittikten sonra tıklama olayını ekle
-        chest.addEventListener('animationend', (event) => {
-            // Sadece 'approachChest' animasyonu bittiğinde tıklama aktif olsun ve yazıyı göster
+        // Pembe sandık animasyonu bittikten sonra
+        pinkChest.addEventListener('animationend', (event) => {
             if (event.animationName === 'approachChest') {
-                chest.addEventListener('click', openChest);
-                chestPrompt.classList.add('visible'); // Yazıyı görünür yap
+                pinkChestPrompt.classList.add('visible'); // Yazıyı göster
+                pinkChest.addEventListener('click', handlePinkChestClick);
             }
         });
 
-        function openChest() {
-            chest.classList.add('open'); // Ana sandığı aç
-            chestPrompt.classList.remove('visible'); // "Aç" yazısını gizle
-            chest.removeEventListener('click', openChest); // Ana sandık tıklamasını kaldır
-            chest.style.cursor = 'default';
+        function handlePinkChestClick() {
+            pinkChest.removeEventListener('click', handlePinkChestClick);
+            pinkChestPrompt.classList.remove('visible'); // Yazıyı gizle
+            pinkChest.classList.add('shaking'); // Sallanma animasyonu
 
-            // İç sandık görünür olduktan sonra tıklama ekle
-            innerChest.addEventListener('transitionend', () => {
-                 innerChest.addEventListener('click', openInnerChest);
-            }, { once: true }); // Sadece bir kere çalışsın
+            pinkChest.addEventListener('animationend', (event) => {
+                if (event.animationName === 'shake') {
+                    showGoldChest();
+                }
+            }, { once: true });
         }
 
-        function openInnerChest() {
-            innerChest.classList.add('open'); // İç sandığı aç (görsel efekt için)
-            innerChest.removeEventListener('click', openInnerChest); // İç sandık tıklamasını kaldır
-            innerChest.style.cursor = 'default';
+        function showGoldChest() {
+            pinkChest.classList.add('hidden'); // Pembe sandığı gizle
+            goldChest.classList.add('visible'); // Altın sandığı göster
 
-            // Kısa bir süre sonra çatlama efekti ve mesaj
-            setTimeout(() => {
-                crackOverlay.classList.add('visible'); // Çatlak efektini göster
-                message.style.opacity = 1; // Yeni mesajı göster
-                chest.style.opacity = 0; // Sandıkları gizle (opsiyonel)
-                innerChest.style.opacity = 0;
-                chest.style.transition = 'opacity 0.5s';
-                innerChest.style.transition = 'opacity 0.5s';
-            }, 400); // İç kapak açılma süresi kadar bekle
+            // Altın sandık göründükten sonra
+            goldChest.addEventListener('transitionend', (event) => {
+                if (event.propertyName === 'opacity' || event.propertyName === 'transform') {
+                    goldChestPrompt.classList.add('visible'); // Yazıyı göster
+                    goldChest.addEventListener('click', handleGoldChestClick, { once: true });
+                }
+            }, { once: true });
         }
 
-        // Eski mesaj ve peri kızı ile ilgili event listener'lar kaldırıldı.
+         function handleGoldChestClick() {
+             goldChest.removeEventListener('click', handleGoldChestClick);
+             goldChestPrompt.classList.remove('visible'); // Yazıyı gizle
+             goldChest.classList.add('shaking'); // Sallanma animasyonu
+
+             goldChest.addEventListener('animationend', (event) => {
+                 if (event.animationName === 'shake') {
+                     crackScreen();
+                 }
+             }, { once: true });
+         }
+
+        function crackScreen() {
+             // goldChest.classList.add('open'); // Kapak açma isteğe bağlı
+             goldChest.classList.add('hidden'); // Altın sandığı gizle
+             crackOverlay.classList.add('visible'); // Çatlak efektini göster
+
+             // Çatlak göründükten 2 saniye sonra mesajı göster
+             setTimeout(() => {
+                 message.style.opacity = 1;
+                 message.classList.add('blinking');
+             }, 2000);
+        }
 
 
     </script>
