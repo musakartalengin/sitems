@@ -3,337 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sürpriz!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <title>Bir Soru</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            background: #0a0a2a url('background.jpeg') center/cover no-repeat; /* Yıldızlı arka plan */
+            background: #1a1a2e; /* Koyu mavi tonu */
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
             position: relative;
-            perspective: 1000px; /* 3D animasyonlar için */
+            font-family: 'Arial', sans-serif;
         }
 
         .scene {
-            width: 300px;
-            height: 400px;
+            width: 90%;
+            max-width: 800px; /* Maksimum genişlik */
+            height: 80vh;
             position: relative;
+            display: flex;
+            justify-content: center; /* Ortala */
+            gap: 25%; /* Karakterler arası boşluğu daha da artır */
+            align-items: center; /* Dikeyde ortala (aşağıdan yukarı taşı) */
+            padding-bottom: 10vh; /* Biraz daha yukarı itmek için alt boşluk */
         }
 
-        .magic-chest {
-            width: 150px;
-            height: 100px;
-            background: #FFB6C1; /* Açık Pembe sandık */
-            border: 5px solid #FF69B4; /* Koyu Pembe çerçeve */
-            border-radius: 10px;
-            position: absolute;
-            bottom: -200px; /* Başlangıçta ekranın altında */
-            left: 50%;
-            /* transform-style: preserve-3d; Kaldırıldı */
-            transform: translateX(-50%) scale(0.1) rotateY(30deg); /* Başlangıçta küçük ve uzakta */
+        /* --- Karakterler --- */
+        .character {
+            width: 40%; /* Genişliği ayarla */
+            max-width: 250px;
+            position: relative; /* Balonlar için */
             opacity: 0;
-            animation: approachChest 3s ease-out 0.5s forwards;
-            cursor: pointer; /* Açmak için tıklanabilir hissi */
-            z-index: 10;
-            position: relative; /* İçerik konumlandırması için */
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-
-        .gold-chest { /* .inner-chest yerine .gold-chest */
-            width: 100px; /* Biraz daha büyük yapalım */
-            height: 70px;
-            background: linear-gradient(to bottom, #FFFACD, #FFD700); /* Altın gradyan */
-            border: 4px solid #B8860B; /* Koyu altın çerçeve */
-            border-radius: 8px;
-            position: absolute;
-            bottom: 20px; /* Pembe sandığın son konumuyla aynı */
-            left: 50%;
-            transform: translateX(-50%); /* scale(0) kaldırıldı, sadece merkezleme */
-            opacity: 0; /* Başlangıçta gizli */
-            transition: transform 0.5s ease-out, opacity 0.5s ease-out; /* Transition */
-            cursor: pointer;
-            z-index: 11; /* Pembe sandığın üzerinde */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .gold-chest.visible { /* .visible sınıfını geri ekle */
-             opacity: 1;
-             transform: translateX(-50%) scale(1);
-        }
-
-        .gold-chest-lid { /* .inner-chest-lid yerine */
-             width: 100%;
-             height: 20px; /* Biraz daha kalın */
-             background: linear-gradient(to bottom, #FFFACD, #F0E68C); /* Açık altın gradyan */
-             border: 4px solid #B8860B;
-             border-bottom: none;
-             border-radius: 8px 8px 0 0;
-             position: absolute;
-             top: -20px;
-             left: -4px; /* Kenarlıkları hizala */
-             transform-origin: bottom center;
-             transition: transform 0.4s ease-in-out;
-        }
-
-        /* .magic-chest.open .inner-chest kuralı artık geçerli değil */
-
-        .gold-chest.open .gold-chest-lid { /* .inner-chest.open yerine */
-             transform: rotateX(-120deg);
-        }
-
-
-        .chest-lid { /* Pembe sandık kapağı */
+        .character img {
             width: 100%;
-            height: 30px;
-            background: linear-gradient(to bottom, #FFFAFA, #FFC0CB); /* Pembe gradyan */
-            border: 5px solid #FF69B4; /* Koyu Pembe çerçeve */
-            border-bottom: none;
-            border-radius: 10px 10px 0 0;
+            height: auto;
+            display: block;
+        }
+        .character.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Konuşma Balonları --- */
+        .speech-bubble {
             position: absolute;
-            top: -30px;
-            left: -5px; /* Kenarlıkları hizalamak için */
-            transform-origin: bottom center;
-            transition: transform 0.5s ease-in-out;
-        }
-
-        .magic-chest.open .chest-lid {
-            transform: rotateX(-120deg); /* Kapak açılma animasyonu */
-        }
-
-        /* Peri kızı artık kullanılmıyor, kaldırılabilir veya gizlenebilir */
-        .fairy-girl {
-           display: none; /* Peri kızını gizle */
-        }
-
-        .message {
-            position: fixed;
-            top: 50%; /* Ortaya alalım */
-            left: 50%;
-            transform: translate(-50%, -50%); /* Tam ortalama */
-            font-family: 'Arial', sans-serif;
-            font-weight: bold; /* Kalın yazı */
-            font-size: 5vw; /* Biraz daha büyük */
-            color: #FFFFE0; /* Açık sarı yazı */
-            background-color: rgba(220, 20, 60, 0.8); /* Yarı şeffaf kırmızı arka plan */
-            padding: 15px 30px; /* İç boşluk */
-            border-radius: 10px; /* Köşe yuvarlama */
-            border: 2px solid #FFFFE0; /* Açık sarı çerçeve */
-            text-shadow: 1px 1px 2px black; /* Yazı gölgesi */
-            opacity: 0;
-            transition: opacity 0.5s ease-out; /* Daha hızlı belirmesi için */
-            z-index: 60; /* Her şeyin üzerinde */
-            white-space: nowrap;
-            text-align: center;
-        }
-
-        .chest-prompt { /* Yazı stilleri */
-            position: absolute;
+            bottom: 105%; /* Karakterin biraz üstü */
             left: 50%;
             transform: translateX(-50%);
-            color: white;
-            font-family: 'Arial', sans-serif;
-            font-size: 14px;
-            text-shadow: 1px 1px 2px black;
+            background-color: white;
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px;
+            border: 3px solid #ccc;
+            min-width: 150px;
+            max-width: 250px;
+            text-align: center;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
-            z-index: 15;
-            pointer-events: none;
+            z-index: 20;
+            white-space: normal; /* Uzun metinler için */
         }
-
-        #pinkChestPrompt {
-             bottom: 0px; /* Pembe sandığın hemen altı */
+        .speech-bubble::after { /* Balonun üçgen ucu */
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 15px 15px 0;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
         }
-
-        #goldChestPrompt {
-             bottom: 0px; /* Altın sandığın hemen altı */
-        }
-
-        .chest-prompt.visible {
-             opacity: 1;
-        }
-
-
-        .magic-chest.hidden, .gold-chest.hidden {
-            opacity: 0 !important; /* Kaybolma efekti için !important gerekebilir */
-            pointer-events: none; /* Kaybolunca tıklanmasın */
-            transition: opacity 0.5s ease-out;
-        }
-
-        .crack-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('cracked-screen.png') center/cover no-repeat;
-            opacity: 0;
-            transition: opacity 0.3s ease-in;
-            z-index: 50; /* En üstte */
-            pointer-events: none; /* Tıklamayı engellemesin */
-        }
-
-        .crack-overlay.visible {
+        .speech-bubble.visible {
             opacity: 1;
         }
 
-        @keyframes shake { /* Tıklama animasyonu */
-            0%, 100% { transform: translateX(-50%) rotate(0deg); }
-            25% { transform: translateX(-50%) rotate(-2deg); }
-            75% { transform: translateX(-50%) rotate(2deg); }
+        /* --- Evet/Hayır Düğmeleri --- */
+        .options {
+            position: absolute;
+            bottom: -60px; /* Kız karakterin altına */
+            left: 50%;
+            transform: translateX(-50%); /* Ortala */
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out 0.5s; /* Gecikmeli görünüm */
+            z-index: 25;
+        }
+        .options.visible {
+            opacity: 1;
+        }
+        .options button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #evet-buton { background-color: #4CAF50; color: white; }
+        #evet-buton:hover { background-color: #45a049; }
+        #hayir-buton { background-color: #f44336; color: white; }
+        #hayir-buton:hover { background-color: #da190b; }
+
+        /* --- Kalp İkonu ve Animasyonu --- */
+        #kalp-ikon {
+            position: absolute; /* Scene'e göre konumlanacak */
+            font-size: 50px; /* Kalp boyutu */
+            color: red;
+            opacity: 0;
+            z-index: 100; /* Diğer her şeyin üzerinde olmalı */
+            /* Başlangıç konumu JS ile ayarlanacak */
+        }
+        @keyframes kalp-ucusu {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            50% { opacity: 1; transform: translate(var(--tx), var(--ty)) scale(1.5); } /* Ortada büyüsün */
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5); } /* Hedefte küçülerek kaybolsun */
+        }
+        #kalp-ikon.flying {
+            animation: kalp-ucusu 1.5s ease-in-out forwards;
         }
 
-        .shaking {
-            animation: shake 0.3s ease-in-out;
+        /* --- Kırık Kalp --- */
+        #kirik-kalp {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 30;
+             /* Konumu JS ile ayarlanacak */
+        }
+         #kirik-kalp.visible {
+             opacity: 1;
+         }
+
+        /* --- Gözyaşı --- */
+        .teardrop {
+            position: absolute;
+            width: 10px;
+            height: 15px;
+            background-color: #a0d2eb; /* Açık mavi */
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; /* Damla şekli */
+            opacity: 0;
+            z-index: 110; /* Kalbin de üzerinde olabilir */
+            pointer-events: none; /* Tıklanamaz */
+        }
+        @keyframes teardrop-fall {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(50px); } /* Aşağı düşüp kaybolsun */
+        }
+        .teardrop.falling {
+            animation: teardrop-fall 1s ease-in forwards;
         }
 
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .message.blinking {
-            animation: blink 1s infinite;
-        }
-
-
-        /* Animasyonlar */
-        @keyframes approachChest { /* Pembe sandığın aşağıdan gelmesi */
-            0% {
-                bottom: -200px;
-                transform: translateX(-50%) scale(0.1) rotateY(30deg);
-                opacity: 0;
-            }
-            70% {
-                 bottom: 20px; /* Daha aşağıda dursun */
-                 transform: translateX(-50%) scale(1) rotateY(-10deg);
-                 opacity: 1;
-            }
-            100% {
-                bottom: 20px; /* Daha aşağıda dursun */
-                transform: translateX(-50%) scale(1) rotateY(0deg);
-                opacity: 1;
-            }
-        }
-
-        @keyframes revealFairy {
-            0% {
-                transform: translateX(-50%) translateY(20px) scale(0);
-                opacity: 0;
-            }
-            100% {
-                transform: translateX(-50%) translateY(-120px) scale(1); /* Sandıktan yukarı çıkar */
-                opacity: 1;
-            }
-        }
-
-        @keyframes flyAround {
-            0% { transform: translateX(-50%) translateY(-120px) scale(1) rotateZ(0deg); }
-            25% { transform: translateX(-150%) translateY(-200px) scale(1.1) rotateZ(-15deg); }
-            50% { transform: translateX(50%) translateY(-250px) scale(1) rotateZ(15deg); }
-            75% { transform: translateX(-50%) translateY(-180px) scale(1.1) rotateZ(-10deg); }
-            100% { transform: translateX(-50%) translateY(-120px) scale(1) rotateZ(0deg); }
-        }
-
-
-        @keyframes fadeInMessage {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -20px);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-        }
+        /* --- Başlangıç Sandığı (Opsiyonel) --- */
+        /* Eğer başlangıçta sandık isteniyorsa buraya eklenebilir */
+        /* .initial-chest { ... } */
 
     </style>
 </head>
 <body>
     <div class="scene">
-        <div class="magic-chest" id="chest">
-            <div class="chest-lid"></div>
-            <!-- İçteki sandık div'i buradan kaldırıldı -->
-            <!-- <img src="peri-kizi.png" alt="Peri Kızı" class="fairy-girl" id="fairy"> -->
+        <!-- Başlangıçta sandık istenirse buraya eklenebilir -->
+        <!-- <div class="initial-chest" id="startChest"></div> -->
+
+        <div class="character" id="erkek-karakter">
+            <img src="erkek-karakter.png" alt="Erkek Karakter">
+            <div class="speech-bubble" id="erkek-balon">Merhaba prenses gönlünü alabilir miyim?</div>
+            <div class="speech-bubble" id="uzgun-balon" style="background-color: #f0f0f0;">Ah, çok üzüldüm...</div>
+             <div id="kirik-kalp">💔</div>
         </div>
-        <div class="chest-prompt" id="pinkChestPrompt">Sihirli Sandığı Aç</div> <!-- Pembe sandık yazısı -->
-         <div class="gold-chest" id="goldChest"> <!-- innerChest yerine goldChest -->
-             <div class="gold-chest-lid"></div>
-         </div>
-        <div class="chest-prompt" id="goldChestPrompt">Sihirli Sandığı Aç</div> <!-- Altın sandık yazısı -->
+
+        <div class="character" id="kiz-karakter">
+            <img src="peri-kizi.png" alt="Kız Karakter">
+            <div class="options" id="cevap-secenekleri">
+                <button id="evet-buton">Evet</button>
+                <button id="hayir-buton">Hayır</button>
+            </div>
+             <!-- Kalp ikonu kızın dışına, scene içine taşındı -->
+        </div>
+         <div id="kalp-ikon">❤️</div> <!-- Buraya taşındı -->
     </div>
-     <div class="crack-overlay" id="crackOverlay"></div>
-    <div class="message" id="message">Güzelliğinizden dolayı ekranı çatlattınız!</div> <!-- Yeni mesaj -->
 
     <script>
-        const pinkChest = document.getElementById('chest');
-        const goldChest = document.getElementById('goldChest');
-        const pinkChestPrompt = document.getElementById('pinkChestPrompt');
-        const goldChestPrompt = document.getElementById('goldChestPrompt');
-        const message = document.getElementById('message');
-        const crackOverlay = document.getElementById('crackOverlay');
+        const erkekKarakter = document.getElementById('erkek-karakter');
+        const kizKarakter = document.getElementById('kiz-karakter');
+        const erkekBalon = document.getElementById('erkek-balon');
+        const uzgunBalon = document.getElementById('uzgun-balon');
+        const cevapSecenekleri = document.getElementById('cevap-secenekleri');
+        const evetButon = document.getElementById('evet-buton');
+        const hayirButon = document.getElementById('hayir-buton');
+        const kalpIkon = document.getElementById('kalp-ikon');
+        const kirikKalp = document.getElementById('kirik-kalp');
 
-        // Pembe sandık animasyonu bittikten sonra
-        pinkChest.addEventListener('animationend', (event) => {
-            if (event.animationName === 'approachChest') {
-                pinkChestPrompt.classList.add('visible'); // Yazıyı göster
-                pinkChest.addEventListener('click', handlePinkChestClick);
-            }
+        // Başlangıç animasyonu (şimdilik doğrudan karakterleri gösterelim)
+        // Eğer başlangıçta sandık olacaksa, bu kısım sandık tıklamasına bağlanmalı
+        function startScene() {
+            erkekKarakter.classList.add('visible');
+            kizKarakter.classList.add('visible');
+
+            // Erkek karakter göründükten sonra balonu ve seçenekleri göster
+            erkekKarakter.addEventListener('transitionend', () => {
+                erkekBalon.classList.add('visible');
+                cevapSecenekleri.classList.add('visible');
+            }, { once: true });
+        }
+
+        // Evet butonuna tıklanınca
+        evetButon.addEventListener('click', () => {
+            erkekBalon.classList.remove('visible');
+            cevapSecenekleri.classList.remove('visible');
+
+            const kizImg = kizKarakter.querySelector('img');
+            const erkekImg = erkekKarakter.querySelector('img');
+            const sceneRect = document.querySelector('.scene').getBoundingClientRect();
+            const kizImgRect = kizImg.getBoundingClientRect();
+            const erkekImgRect = erkekImg.getBoundingClientRect();
+
+             // Başlangıç konumu: Kız resminin ortası (scene'e göre)
+            const startX_abs = kizImgRect.left + kizImgRect.width / 2;
+            const startY_abs = kizImgRect.top + kizImgRect.height / 2;
+            const startX_rel = startX_abs - sceneRect.left;
+            const startY_rel = startY_abs - sceneRect.top;
+
+            // Hedef konumu: Erkek resminin ortası (scene'e göre)
+            const endX_abs = erkekImgRect.left + erkekImgRect.width / 2;
+            const endY_abs = erkekImgRect.top + erkekImgRect.height / 2;
+            const endX_rel = endX_abs - sceneRect.left;
+            const endY_rel = endY_abs - sceneRect.top;
+
+            // Kalp ikonunu başlangıç noktasına göre ayarla
+            kalpIkon.style.position = 'absolute'; // Scene'e göre konumlandır (CSS'de zaten var ama emin olalım)
+            kalpIkon.style.opacity = 1; // Görünür yap
+
+            // Boyutları alabilmek için kısa bir bekleme gerekebilir, ama önce pozisyonu ayarlayalım
+            // Kalp boyutunu önceden biliyorsak (font-size'dan) daha iyi olurdu, ama offsetWidth/Height kullanacağız
+            const kalpWidth = kalpIkon.offsetWidth || 50; // Fallback
+            const kalpHeight = kalpIkon.offsetHeight || 50; // Fallback
+
+            // Başlangıç pozisyonunu ayarla (ikonun merkezini kız resminin ortasına hizala)
+            kalpIkon.style.left = `${startX_rel - kalpWidth / 2}px`;
+            kalpIkon.style.top = `${startY_rel - kalpHeight / 2}px`;
+
+            // Hareket mesafesini hesapla (hedef - başlangıç, scene'e göre)
+            const targetX = endX_rel - startX_rel; // X eksenindeki fark
+            const targetY = endY_rel - startY_rel; // Y eksenindeki fark
+
+            // CSS değişkenlerini ayarla (animasyon için)
+            kalpIkon.style.setProperty('--tx', `${targetX}px`);
+            kalpIkon.style.setProperty('--ty', `${targetY}px`);
+
+            // Animasyonu başlat (bir sonraki frame'de)
+            requestAnimationFrame(() => {
+                kalpIkon.classList.add('flying');
+            });
+
+
+            // Animasyon bitince kalbi tamamen gizle (opsiyonel)
+            // kalpIkon.addEventListener('animationend', () => {
+            //     kalpIkon.style.opacity = 0;
+            // }, { once: true });
         });
 
-        function handlePinkChestClick() {
-            pinkChest.removeEventListener('click', handlePinkChestClick);
-            pinkChestPrompt.classList.remove('visible'); // Yazıyı gizle
-            pinkChest.classList.add('shaking'); // Sallanma animasyonu
+        // Hayır butonuna tıklanınca
+        hayirButon.addEventListener('click', () => {
+            erkekBalon.classList.remove('visible');
+            cevapSecenekleri.classList.remove('visible');
+            // uzgunBalon.classList.add('visible'); // Üzgün balonu gösterme
 
-            pinkChest.addEventListener('animationend', (event) => {
-                if (event.animationName === 'shake') {
-                    showGoldChest();
-                }
+            const erkekImg = erkekKarakter.querySelector('img');
+            const sceneRect = document.querySelector('.scene').getBoundingClientRect();
+            const erkekImgRect = erkekImg.getBoundingClientRect();
+
+            // Kırık kalp pozisyonunu ayarla (Erkek resminin üst-ortası, scene'e göre)
+            const kirikKalpX_abs = erkekImgRect.left + erkekImgRect.width / 2;
+            const kirikKalpY_abs = erkekImgRect.top;
+            const kirikKalpX_rel = kirikKalpX_abs - sceneRect.left;
+            const kirikKalpY_rel = kirikKalpY_abs - sceneRect.top;
+
+            kirikKalp.style.position = 'absolute'; // Scene'e göre
+            requestAnimationFrame(() => {
+                const kirikKalpWidth = kirikKalp.offsetWidth || 30; // Fallback
+                const kirikKalpHeight = kirikKalp.offsetHeight || 30; // Fallback
+                kirikKalp.style.left = `${kirikKalpX_rel - kirikKalpWidth / 2}px`; // Yatayda ortala
+                kirikKalp.style.top = `${kirikKalpY_rel - kirikKalpHeight}px`; // Resmin tam üstünde
+                kirikKalp.classList.add('visible');
+            });
+
+
+            // Gözyaşı oluştur ve animasyonu başlat
+            const tear = document.createElement('div');
+            tear.classList.add('teardrop');
+            document.querySelector('.scene').appendChild(tear); // Scene'e ekle
+
+            // Gözyaşı başlangıç pozisyonu (Erkek resminin göz hizası - yaklaşık, scene'e göre)
+            const tearStartX_abs = erkekImgRect.left + erkekImgRect.width / 2; // Ortadan başlasın
+            const tearStartY_abs = erkekImgRect.top + erkekImgRect.height * 0.30; // Göz hizası (yaklaşık %30 aşağıda)
+            const tearStartX_rel = tearStartX_abs - sceneRect.left;
+            const tearStartY_rel = tearStartY_abs - sceneRect.top;
+
+
+            requestAnimationFrame(() => {
+                 const tearWidth = tear.offsetWidth || 10;
+                 tear.style.left = `${tearStartX_rel - tearWidth / 2}px`;
+                 tear.style.top = `${tearStartY_rel}px`;
+                 tear.style.opacity = 1; // Görünür yap
+                 requestAnimationFrame(() => { // Animasyonu bir sonraki frame'de başlat
+                    tear.classList.add('falling');
+                 });
+            });
+
+            // Animasyon bitince gözyaşını kaldır
+            tear.addEventListener('animationend', () => {
+                tear.remove();
             }, { once: true });
-        }
+        });
 
-        function showGoldChest() {
-            pinkChest.classList.add('hidden'); // Pembe sandığı gizle
-            goldChest.classList.add('visible'); // Altın sandığı göster
-
-            // Altın sandık göründükten sonra
-            goldChest.addEventListener('transitionend', (event) => {
-                if (event.propertyName === 'opacity' || event.propertyName === 'transform') {
-                    goldChestPrompt.classList.add('visible'); // Yazıyı göster
-                    goldChest.addEventListener('click', handleGoldChestClick, { once: true });
-                }
-            }, { once: true });
-        }
-
-         function handleGoldChestClick() {
-             goldChest.removeEventListener('click', handleGoldChestClick);
-             goldChestPrompt.classList.remove('visible'); // Yazıyı gizle
-             goldChest.classList.add('shaking'); // Sallanma animasyonu
-
-             goldChest.addEventListener('animationend', (event) => {
-                 if (event.animationName === 'shake') {
-                     crackScreen();
-                 }
-             }, { once: true });
-         }
-
-        function crackScreen() {
-             // goldChest.classList.add('open'); // Kapak açma isteğe bağlı
-             goldChest.classList.add('hidden'); // Altın sandığı gizle
-             crackOverlay.classList.add('visible'); // Çatlak efektini göster
-
-             // Çatlak göründükten 2 saniye sonra mesajı göster
-             setTimeout(() => {
-                 message.style.opacity = 1;
-                 message.classList.add('blinking');
-             }, 2000);
-        }
-
+        // Sayfa yüklendiğinde sahneyi başlat
+        window.onload = startScene;
 
     </script>
 </body>
