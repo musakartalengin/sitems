@@ -40,7 +40,48 @@
             animation: approachChest 3s ease-out 0.5s forwards;
             cursor: pointer; /* Açmak için tıklanabilir hissi */
             z-index: 10;
+            position: relative; /* İçerik konumlandırması için */
         }
+
+        .inner-chest {
+            width: 80px; /* Daha küçük */
+            height: 50px;
+            background: #FFD700; /* Altın rengi */
+            border: 3px solid #B8860B; /* Koyu altın çerçeve */
+            border-radius: 5px;
+            position: absolute;
+            bottom: 10px; /* Ana sandığın içinde */
+            left: 50%;
+            transform: translateX(-50%) scale(0); /* Başlangıçta gizli */
+            opacity: 0;
+            transition: transform 0.5s ease-out 0.3s, opacity 0.5s ease-out 0.3s; /* Gecikmeli çıkış */
+            cursor: pointer;
+            z-index: 11;
+        }
+
+        .inner-chest-lid {
+             width: 100%;
+             height: 15px;
+             background: #F0E68C; /* Açık altın */
+             border: 3px solid #B8860B;
+             border-bottom: none;
+             border-radius: 5px 5px 0 0;
+             position: absolute;
+             top: -15px;
+             left: -3px;
+             transform-origin: bottom center;
+             transition: transform 0.4s ease-in-out;
+        }
+
+        .magic-chest.open .inner-chest {
+            transform: translateX(-50%) scale(1) translateY(-20px); /* Yukarı çıkar */
+            opacity: 1;
+        }
+
+        .inner-chest.open .inner-chest-lid {
+             transform: rotateX(-120deg);
+        }
+
 
         .chest-lid {
             width: 100%;
@@ -60,20 +101,9 @@
             transform: rotateX(-120deg); /* Kapak açılma animasyonu */
         }
 
+        /* Peri kızı artık kullanılmıyor, kaldırılabilir veya gizlenebilir */
         .fairy-girl {
-            position: absolute;
-            width: 150px; /* Sandıkla benzer boyutta */
-            height: auto;
-            bottom: 10px; /* Sandığın içindeymiş gibi */
-            left: 50%;
-            transform: translateX(-50%) scale(0); /* Başlangıçta görünmez ve küçük */
-            opacity: 0;
-            z-index: 5;
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-        }
-
-        .magic-chest.open .fairy-girl {
-            animation: revealFairy 1s ease-out 0.5s forwards, flyAround 8s ease-in-out 1.5s infinite alternate;
+           display: none; /* Peri kızını gizle */
         }
 
         .message {
@@ -86,8 +116,7 @@
             color: white;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); /* Daha net gölge */
             opacity: 0;
-            /* animation: fadeInMessage 2s ease 2.5s forwards; */ /* Animasyonu JS ile tetikleyeceğiz */
-            transition: opacity 1s ease-out 0.5s; /* Yumuşak geçiş için, peri çıktıktan biraz sonra başlasın */
+            transition: opacity 1s ease-out 0.5s; /* Yumuşak geçiş için */
             z-index: 20;
             white-space: nowrap;
             text-align: center;
@@ -112,8 +141,30 @@
              opacity: 1; /* Sandık yaklaşınca görünür yap */
         }
 
+        .crack-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('cracked-screen.png') center/cover no-repeat;
+            opacity: 0;
+            transition: opacity 0.3s ease-in;
+            z-index: 50; /* En üstte */
+            pointer-events: none; /* Tıklamayı engellemesin */
+        }
+
+        .crack-overlay.visible {
+            opacity: 1;
+        }
+
 
         /* Animasyonlar */
+        /* Peri kızı animasyonları artık gereksiz */
+        /*
+        @keyframes revealFairy { ... }
+        @keyframes flyAround { ... }
+        */
         @keyframes approachChest {
             0% {
                 bottom: -200px;
@@ -169,16 +220,22 @@
     <div class="scene">
         <div class="magic-chest" id="chest">
             <div class="chest-lid"></div>
-            <img src="peri-kizi.png" alt="Peri Kızı" class="fairy-girl" id="fairy">
+             <div class="inner-chest" id="innerChest">
+                 <div class="inner-chest-lid"></div>
+             </div>
+            <!-- <img src="peri-kizi.png" alt="Peri Kızı" class="fairy-girl" id="fairy"> --> <!-- Peri kızı kaldırıldı -->
         </div>
         <div class="chest-prompt" id="chestPrompt">Sihirli Sandığı Aç</div>
     </div>
-    <div class="message" id="message">Günaydın prenses bugün rüyamda seni gördüm 😉</div>
+     <div class="crack-overlay" id="crackOverlay"></div>
+    <div class="message" id="message">Güzelliğinizle ekranı çatlattınız prenses!</div> <!-- Yeni mesaj -->
 
     <script>
         const chest = document.getElementById('chest');
+        const innerChest = document.getElementById('innerChest');
         const message = document.getElementById('message');
         const chestPrompt = document.getElementById('chestPrompt');
+        const crackOverlay = document.getElementById('crackOverlay');
 
         // Sandık animasyonu bittikten sonra tıklama olayını ekle
         chest.addEventListener('animationend', (event) => {
@@ -190,29 +247,34 @@
         });
 
         function openChest() {
-            chest.classList.add('open');
-            chestPrompt.classList.remove('visible'); // Yazıyı gizle
-            message.style.opacity = 1; // Mesajı görünür yap
-            // Tıklandıktan sonra tekrar tıklanmasını engelle
-            chest.removeEventListener('click', openChest);
+            chest.classList.add('open'); // Ana sandığı aç
+            chestPrompt.classList.remove('visible'); // "Aç" yazısını gizle
+            chest.removeEventListener('click', openChest); // Ana sandık tıklamasını kaldır
             chest.style.cursor = 'default';
+
+            // İç sandık görünür olduktan sonra tıklama ekle
+            innerChest.addEventListener('transitionend', () => {
+                 innerChest.addEventListener('click', openInnerChest);
+            }, { once: true }); // Sadece bir kere çalışsın
         }
 
-        // Mesajın animasyonu bittiğinde görünür kalmasını sağla (opsiyonel)
-        message.addEventListener('animationend', (event) => {
-             if (event.animationName === 'fadeInMessage') {
-                message.style.opacity = 1; // Animasyon bitince opaklığı sabitle
-             }
-        });
+        function openInnerChest() {
+            innerChest.classList.add('open'); // İç sandığı aç (görsel efekt için)
+            innerChest.removeEventListener('click', openInnerChest); // İç sandık tıklamasını kaldır
+            innerChest.style.cursor = 'default';
 
-         // Peri kızının animasyonu bittiğinde görünür kalmasını sağla (opsiyonel)
-         const fairy = document.getElementById('fairy');
-         fairy.addEventListener('animationend', (event) => {
-             if (event.animationName === 'revealFairy') {
-                 fairy.style.opacity = 1; // İlk çıkış animasyonu bitince opaklığı sabitle
-                 fairy.style.transform = getComputedStyle(fairy).transform; // Uçuş animasyonuna geçiş için son konumu al
-             }
-         });
+            // Kısa bir süre sonra çatlama efekti ve mesaj
+            setTimeout(() => {
+                crackOverlay.classList.add('visible'); // Çatlak efektini göster
+                message.style.opacity = 1; // Yeni mesajı göster
+                chest.style.opacity = 0; // Sandıkları gizle (opsiyonel)
+                innerChest.style.opacity = 0;
+                chest.style.transition = 'opacity 0.5s';
+                innerChest.style.transition = 'opacity 0.5s';
+            }, 400); // İç kapak açılma süresi kadar bekle
+        }
+
+        // Eski mesaj ve peri kızı ile ilgili event listener'lar kaldırıldı.
 
 
     </script>
