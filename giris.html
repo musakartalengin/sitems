@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rüya Başlangıcı</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #0f0f2a; /* Koyu gece mavisi */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .sleeping-character {
+            width: 80%;
+            max-width: 500px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+            transition: opacity 0.8s;
+        }
+        
+        .dream-button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background: #6a5acd; /* Koyu mor */
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(106, 90, 205, 0.6);
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .dream-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(106, 90, 205, 0.8);
+        }
+        
+        /* Yıldızlı arka plan */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+        
+        /* Portal/Kara delik animasyonu */
+        .portal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: black;
+            box-shadow: 
+                0 0 10px rgba(106, 90, 205, 0.5),
+                0 0 20px rgba(106, 90, 205, 0.3),
+                0 0 30px rgba(106, 90, 205, 0.2);
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.1s; /* Başlangıçta hızlı olsun */
+        }
+        
+        .portal.active {
+            visibility: visible;
+            opacity: 1;
+            animation: portal-grow 3s forwards cubic-bezier(0.12, 0.81, 0.31, 0.95);
+        }
+        
+        @keyframes portal-grow {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                box-shadow: 
+                    0 0 10px rgba(106, 90, 205, 0.5),
+                    0 0 20px rgba(106, 90, 205, 0.3),
+                    0 0 30px rgba(106, 90, 205, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 0 20px rgba(106, 90, 205, 0.7),
+                    0 0 40px rgba(106, 90, 205, 0.5),
+                    0 0 60px rgba(106, 90, 205, 0.3);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(15);
+                box-shadow: 
+                    0 0 30px rgba(106, 90, 205, 0.9),
+                    0 0 60px rgba(106, 90, 205, 0.7),
+                    0 0 90px rgba(106, 90, 205, 0.5);
+            }
+        }
+        
+        /* Spiral efekti */
+        .spiral {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background-image: conic-gradient(
+                from 0deg,
+                rgba(106, 90, 205, 0),
+                rgba(106, 90, 205, 0.1),
+                rgba(106, 90, 205, 0.2),
+                rgba(106, 90, 205, 0),
+                rgba(106, 90, 205, 0)
+            );
+            border-radius: 50%;
+            z-index: 9;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .spiral.active {
+            visibility: visible;
+            opacity: 0.7;
+            animation: spiral-spin 3s forwards linear;
+        }
+        
+        @keyframes spiral-spin {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg) scale(0.1);
+            }
+            to {
+                transform: translate(-50%, -50%) rotate(720deg) scale(3);
+            }
+        }
+        
+        /* Karartma overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s;
+        }
+        
+        .overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <img src="uyuyan-karakter.png" alt="Uyuyan Karakter" class="sleeping-character" id="sleeping-character">
+    
+    <button class="dream-button" id="dream-button">Rüyaya Git</button>
+    
+    <div class="portal" id="portal"></div>
+    <div class="spiral" id="spiral"></div>
+    <div class="overlay" id="overlay"></div>
+    
+    <script>
+        // Yıldızları oluştur
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const count = 100;
+            
+            for(let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Rasgele boyut
+                const size = Math.random() * 3;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Rasgele konum
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Rasgele parıldama animasyonu gecikmesi
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Portal animasyonunu başlat ve sayfaya geçiş yap
+        function startPortalAnimation() {
+            const portal = document.getElementById('portal');
+            const spiral = document.getElementById('spiral');
+            const overlay = document.getElementById('overlay');
+            const sleepingCharacter = document.getElementById('sleeping-character');
+            const dreamButton = document.getElementById('dream-button');
+            
+            // Karakteri ve butonu kademeli olarak gizle
+            sleepingCharacter.style.opacity = '0.7';
+            dreamButton.style.opacity = '0.7';
+            
+            // Portal ve spiral animasyonunu etkinleştir
+            portal.classList.add('active');
+            spiral.classList.add('active');
+            
+            // 2.5 saniye sonra karartma ekranını etkinleştir
+            setTimeout(() => {
+                overlay.classList.add('active');
+                
+                // Karartma tamamlandıktan sonra sayfaya yönlendir
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 700);
+            }, 2500);
+        }
+        
+        // Sayfa yüklendiğinde
+        window.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            
+            // Rüyaya git butonuna tıklandığında portal animasyonunu başlat
+            const dreamButton = document.getElementById('dream-button');
+            dreamButton.addEventListener('click', startPortalAnimation);
+        });
+    </script>
+</body>
+</html> 
