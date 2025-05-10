@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bir Soru</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #1a1a2e; /* Koyu mavi tonu */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .scene {
+            width: 90%;
+            max-width: 800px; /* Maksimum genişlik */
+            height: 80vh;
+            position: relative;
+            display: flex;
+            justify-content: center; /* Ortala */
+            gap: 25%; /* Karakterler arası boşluğu daha da artır */
+            align-items: center; /* Dikeyde ortala (aşağıdan yukarı taşı) */
+            padding-bottom: 10vh; /* Biraz daha yukarı itmek için alt boşluk */
+        }
+
+        /* --- Karakterler --- */
+        .character {
+            width: 40%; /* Genişliği ayarla */
+            max-width: 250px;
+            position: relative; /* Balonlar için */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .character img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .speech-bubble {
+            position: absolute;
+            bottom: 105%; /* Karakterin biraz üstü */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px;
+            border: 3px solid #ccc;
+            min-width: 150px;
+            max-width: 250px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 20;
+            white-space: normal; /* Uzun metinler için */
+            pointer-events: none;
+        }
+        .speech-bubble.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- Evet/Hayır Düğmeleri --- */
+        .options {
+            position: absolute;
+            bottom: -60px; /* Kız karakterin altına */
+            left: 50%;
+            transform: translateX(-50%); /* Ortala */
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 25;
+        }
+        .options.visible {
+            opacity: 1;
+        }
+        .options button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #evet-buton { background-color: #4CAF50; color: white; }
+        #evet-buton:hover { background-color: #45a049; }
+        #hayir-buton {
+            background-color: #f44336;
+            color: white;
+            position: relative;
+            z-index: 26;
+        }
+        #hayir-buton:hover { background-color: #da190b; }
+
+        /* --- Kalp İkonu ve Animasyonu --- */
+        #kalp-ikon {
+            position: absolute; /* Scene'e göre konumlanacak */
+            font-size: 50px; /* Kalp boyutu */
+            color: red;
+            opacity: 0;
+            z-index: 100; /* Diğer her şeyin üzerinde olmalı */
+            /* Başlangıç konumu JS ile ayarlanacak */
+        }
+        @keyframes kalp-ucusu {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            50% { opacity: 1; transform: translate(var(--tx), var(--ty)) scale(1.5); } /* Ortada büyüsün */
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5); } /* Hedefte küçülerek kaybolsun */
+        }
+        #kalp-ikon.flying {
+            animation: kalp-ucusu 1.5s ease-in-out forwards;
+        }
+
+        /* --- Kırık Kalp --- */
+        #kirik-kalp {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 30;
+             /* Konumu JS ile ayarlanacak */
+        }
+         #kirik-kalp.visible {
+             opacity: 1;
+         }
+
+        /* --- Gözyaşı --- */
+        .teardrop {
+            position: absolute;
+            width: 10px;
+            height: 15px;
+            background-color: #a0d2eb; /* Açık mavi */
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; /* Damla şekli */
+            opacity: 0;
+            z-index: 110; /* Kalbin de üzerinde olabilir */
+            pointer-events: none; /* Tıklanamaz */
+        }
+        @keyframes teardrop-fall {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(50px); } /* Aşağı düşüp kaybolsun */
+        }
+        .teardrop.falling {
+            animation: teardrop-fall 1s ease-in forwards;
+        }
+
+        /* --- Yeni Romantik Sahne Stilleri --- */
+        .romantic-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('uzay.png');
+            background-size: 60%;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease-in-out;
+            z-index: 200;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 10vh;
+        }
+        
+        .romantic-scene.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .couple-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 10px;
+            height: 300px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 1.5s ease-out;
+        }
+        
+        .romantic-scene.visible .couple-container {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .couple-container img {
+            height: 90%;
+            width: auto;
+        }
+        
+        .heart-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 210;
+        }
+        
+        .heart-particle {
+            position: absolute;
+            color: rgba(255, 0, 0, 0.7);
+            font-size: 20px;
+            animation: float 4s ease-in-out forwards;
+        }
+        
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(0) rotate(0deg);
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) rotate(360deg);
+            }
+        }
+        
+        /* Transition overlay */
+        .transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 150;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s;
+        }
+        
+        .transition-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* --- Başlangıç Sandığı (Opsiyonel) --- */
+        /* Eğer başlangıçta sandık isteniyorsa buraya eklenebilir */
+        /* .initial-chest { ... } */
+
+        /* Romantik sahnedeki konuşma balonu */
+        .space-speech-bubble {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px;
+            border: 3px solid #ccc;
+            min-width: 150px;
+            max-width: 250px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.8s;
+            z-index: 211;
+            white-space: normal;
+            font-size: 18px;
+        }
+        
+        .space-speech-bubble.visible {
+            opacity: 1;
+        }
+
+        /* UFO ve ışın stilleri */
+        .ufo {
+            position: absolute;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 60px;
+            background-color: #444;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            z-index: 300;
+            opacity: 0;
+            transition: top 2s, opacity 1s;
+        }
+        
+        .ufo:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 25px;
+            background-color: #666;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        }
+        
+        .ufo.active {
+            opacity: 1;
+            top: 20%;
+        }
+        
+        .beam {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-top: 200px solid rgba(0, 255, 255, 0.3);
+            z-index: 299;
+            opacity: 0;
+            transition: opacity 1s 1s;
+        }
+        
+        .beam.active {
+            opacity: 1;
+        }
+        
+        .character-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 255, 255, 0.7);
+            border-radius: 50%;
+            filter: blur(20px);
+            transform: scale(0);
+            opacity: 0;
+            z-index: 280;
+            transition: transform 1.5s, opacity 1.5s;
+        }
+        
+        .character-glow.active {
+            transform: scale(3);
+            opacity: 0.8;
+        }
+
+        /* Kara delik stilleri */
+        .black-hole {
+            position: absolute;
+            bottom: -300px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #000000 30%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 290;
+            box-shadow: 0 0 30px #000, 0 0 60px rgba(128, 0, 128, 0.7);
+            transition: transform 0.5s, opacity 0.5s;
+        }
+        
+        .black-hole.active {
+            opacity: 1;
+            transform: translateX(-50%) scale(3);
+        }
+        
+        @keyframes fall-into-black-hole {
+            0% {
+                transform: translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(150px) scale(0.7) rotate(180deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(300px) scale(0.1) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .falling {
+            animation: fall-into-black-hole 2s forwards cubic-bezier(0.42, 0, 0.58, 1);
+        }
+        
+        @keyframes black-hole-pulse {
+            0%, 100% {
+                box-shadow: 0 0 30px #000, 0 0 60px rgba(128, 0, 128, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 50px #000, 0 0 80px rgba(128, 0, 128, 1);
+            }
+        }
+        
+        .black-hole.pulsing {
+            animation: black-hole-pulse 2s infinite;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <!-- Başlangıçta sandık istenirse buraya eklenebilir -->
+        <!-- <div class="initial-chest" id="startChest"></div> -->
+
+        <div class="character" id="erkek-karakter">
+            <img src="erkek-karakter.png" alt="Erkek Karakter">
+            <div class="speech-bubble" id="affet-balon">Beni affet</div>
+            <div class="speech-bubble" id="niyet-balon">Çünkü niyetim seni üzmek olmaz</div>
+            <div id="kirik-kalp">💔</div>
+        </div>
+
+        <div class="character" id="kiz-karakter">
+            <img src="peri-kizi.png" alt="Kız Karakter">
+            <div class="speech-bubble" id="affettin-balon">Affettin mi?</div>
+            <div class="options" id="cevap-secenekleri">
+                <button id="evet-buton">Evet</button>
+                <button id="hayir-buton">Hayır</button>
+            </div>
+        </div>
+         <div id="kalp-ikon">❤️</div> <!-- Buraya taşındı -->
+    </div>
+
+    <!-- Yeni Romantik Sahne -->
+    <div class="romantic-scene" id="romantic-scene">
+        <div class="couple-container">
+            <div class="space-speech-bubble" id="space-speech-bubble">gerçekten rüya 😛</div>
+        </div>
+        <div class="heart-particles" id="heart-particles"></div>
+    </div>
+    
+    <!-- Geçiş için overlay -->
+    <div class="transition-overlay" id="transition-overlay"></div>
+
+    <!-- UFO ve ışın elementi -->
+    <div class="ufo" id="ufo">
+        <div class="beam" id="beam"></div>
+    </div>
+
+    <!-- Kara delik elementi -->
+    <div class="black-hole" id="black-hole"></div>
+
+    <script>
+        const affetBalon = document.getElementById('affet-balon');
+        const niyetBalon = document.getElementById('niyet-balon');
+        const affettinBalon = document.getElementById('affettin-balon');
+        const cevapSecenekleri = document.getElementById('cevap-secenekleri');
+        const evetButon = document.getElementById('evet-buton');
+        const hayirButon = document.getElementById('hayir-buton');
+        const kalpIkon = document.getElementById('kalp-ikon');
+        const erkekKarakter = document.getElementById('erkek-karakter');
+        const kizKarakter = document.getElementById('kiz-karakter');
+        const romanticScene = document.getElementById('romantic-scene');
+        const transitionOverlay = document.getElementById('transition-overlay');
+        const heartParticles = document.getElementById('heart-particles');
+        let hayirInterval = null;
+
+        // Başlangıçta erkek karakterde "Beni affet" görünür, butonlar gizli
+        window.onload = () => {
+            affetBalon.classList.add('visible');
+            niyetBalon.classList.remove('visible');
+            affettinBalon.classList.remove('visible');
+            cevapSecenekleri.classList.remove('visible');
+            
+            // 2 saniye sonra "Çünkü niyetim seni üzmek olmaz" balonu göster
+            setTimeout(() => {
+                affetBalon.classList.remove('visible');
+                niyetBalon.classList.add('visible');
+                
+                // 2 saniye sonra "Affettin mi?" balonu ve butonları göster
+                setTimeout(() => {
+                    niyetBalon.classList.remove('visible');
+                    affettinBalon.classList.add('visible');
+                    cevapSecenekleri.classList.add('visible');
+                }, 2000);
+            }, 2000);
+        };
+
+        function moveButtonRandomly() {
+            // Bu fonksiyon artık kullanılmıyor, kaldırılabilir
+        }
+
+        function stopHayirWander() {
+            if (hayirInterval) clearInterval(hayirInterval);
+            hayirInterval = null;
+            if (hayirButon) {
+                hayirButon.classList.remove('runaway-button');
+                hayirButon.style.position = ''; // CSS'e geri dönmesi için
+                hayirButon.style.top = '';
+                hayirButon.style.left = '';
+            }
+        }
+
+        if (evetButon) {
+            evetButon.addEventListener('click', () => {
+                cevapSecenekleri.classList.remove('visible');
+                affetBalon.classList.remove('visible');
+                niyetBalon.classList.remove('visible');
+                affettinBalon.classList.remove('visible');
+                
+                // UFO'yu getir ve ışın efektini göster
+                const ufo = document.getElementById('ufo');
+                const beam = document.getElementById('beam');
+                
+                // UFO'yu aktifleştir
+                ufo.classList.add('active');
+                
+                // 1.5 saniye sonra ışını aktifleştir
+                setTimeout(() => {
+                    beam.classList.add('active');
+                    
+                    // Karakterlerin etrafında parlama efekti
+                    const erkekRect = erkekKarakter.getBoundingClientRect();
+                    const kizRect = kizKarakter.getBoundingClientRect();
+                    
+                    // Erkek karakter için parlama
+                    const erkekGlow = document.createElement('div');
+                    erkekGlow.classList.add('character-glow');
+                    erkekGlow.style.left = `${erkekRect.left + erkekRect.width/2 - 50}px`;
+                    erkekGlow.style.top = `${erkekRect.top + erkekRect.height/2 - 50}px`;
+                    document.body.appendChild(erkekGlow);
+                    
+                    // Kız karakter için parlama
+                    const kizGlow = document.createElement('div');
+                    kizGlow.classList.add('character-glow');
+                    kizGlow.style.left = `${kizRect.left + kizRect.width/2 - 50}px`;
+                    kizGlow.style.top = `${kizRect.top + kizRect.height/2 - 50}px`;
+                    document.body.appendChild(kizGlow);
+                    
+                    // Parlamaları aktifleştir
+                    setTimeout(() => {
+                        erkekGlow.classList.add('active');
+                        kizGlow.classList.add('active');
+                        
+                        // Karakterleri yukarı doğru çek (ışınlama efekti)
+                        erkekKarakter.style.transition = 'transform 1.5s, opacity 1.5s';
+                        kizKarakter.style.transition = 'transform 1.5s, opacity 1.5s';
+                        erkekKarakter.style.transform = 'translateY(-200px) scale(0.7)';
+                        kizKarakter.style.transform = 'translateY(-200px) scale(0.7)';
+                        erkekKarakter.style.opacity = '0';
+                        kizKarakter.style.opacity = '0';
+                        
+                        // 2 saniye sonra geçiş animasyonu başlat
+                        setTimeout(() => {
+                            // Beyaz overlay ile yumuşak geçiş
+                            transitionOverlay.classList.add('active');
+                            
+                            // Overlay tam görünür olunca romantik sahneyi aç
+                            setTimeout(() => {
+                                // UFO, ışın ve parlamaları kaldır
+                                ufo.remove();
+                                erkekGlow.remove();
+                                kizGlow.remove();
+                                
+                                romanticScene.classList.add('visible');
+                                
+                                // Overlay'i yavaşça kaldır
+                                setTimeout(() => {
+                                    transitionOverlay.classList.remove('active');
+                                    
+                                    // Kalp parçacıklarını oluştur
+                                    createHeartParticles();
+                                    
+                                    // Periyodik olarak yeni kalp parçacıkları oluştur
+                                    setInterval(createHeartParticles, 8000);
+                                    
+                                    // Erkek karakterin konuşma balonunu göster
+                                    setTimeout(() => {
+                                        const spaceSpeechBubble = document.getElementById('space-speech-bubble');
+                                        if (spaceSpeechBubble) {
+                                            spaceSpeechBubble.classList.add('visible');
+                                        }
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000);
+                        }, 2000);
+                    }, 500);
+                }, 1500);
+            });
+        }
+
+        if (hayirButon) {
+            hayirButon.addEventListener('click', () => {
+                cevapSecenekleri.classList.remove('visible');
+                affetBalon.classList.remove('visible');
+                niyetBalon.classList.remove('visible');
+                affettinBalon.classList.remove('visible');
+                
+                // Kara deliği aktifleştir
+                const blackHole = document.getElementById('black-hole');
+                blackHole.style.bottom = `${window.innerHeight - erkekKarakter.getBoundingClientRect().bottom + 150}px`;
+                blackHole.classList.add('active');
+                blackHole.classList.add('pulsing');
+                
+                // Erkek karakteri düşür
+                setTimeout(() => {
+                    erkekKarakter.style.transformOrigin = 'center bottom';
+                    erkekKarakter.classList.add('falling');
+                    
+                    // Erkek düştükten sonra
+                    setTimeout(() => {
+                        erkekKarakter.style.opacity = '0';
+                        
+                        // Kara deliği küçült ve kaldır
+                        setTimeout(() => {
+                            blackHole.style.transition = 'transform 0.8s, opacity 0.8s';
+                            blackHole.style.transform = 'translateX(-50%) scale(0)';
+                            blackHole.style.opacity = '0';
+                            
+                            // Normal senaryoya dön ve yeniden başla
+                            setTimeout(() => {
+                                // Erkek karakteri resetle
+                                erkekKarakter.classList.remove('falling');
+                                erkekKarakter.style.transform = '';
+                                erkekKarakter.style.opacity = '1';
+                                erkekKarakter.style.transformOrigin = '';
+                                
+                                // Kara deliği resetle
+                                blackHole.classList.remove('active');
+                                blackHole.classList.remove('pulsing');
+                                blackHole.style.transform = '';
+                                blackHole.style.opacity = '';
+                                blackHole.style.transition = '';
+                                
+                                // İlk akışa dön
+                                affetBalon.classList.add('visible');
+                                
+                                setTimeout(() => {
+                                    affetBalon.classList.remove('visible');
+                                    niyetBalon.classList.add('visible');
+                                    
+                                    setTimeout(() => {
+                                        niyetBalon.classList.remove('visible');
+                                        affettinBalon.classList.add('visible');
+                                        cevapSecenekleri.classList.add('visible');
+                                    }, 2000);
+                                }, 2000);
+                            }, 1000);
+                        }, 1500);
+                    }, 2000);
+                }, 500);
+            });
+        }
+
+        // Kalp parçacıkları oluştur
+        function createHeartParticles() {
+            for(let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '❤️';
+                    heart.classList.add('heart-particle');
+                    
+                    // Rasgele konum ve boyut
+                    const size = 10 + Math.random() * 20;
+                    const posX = Math.random() * 100;
+                    const delay = Math.random() * 2;
+                    const duration = 3 + Math.random() * 4;
+                    
+                    heart.style.left = `${posX}%`;
+                    heart.style.bottom = '10%';
+                    heart.style.fontSize = `${size}px`;
+                    heart.style.animationDuration = `${duration}s`;
+                    heart.style.animationDelay = `${delay}s`;
+                    
+                    heartParticles.appendChild(heart);
+                    
+                    // Animasyon bitince kaldır
+                    setTimeout(() => {
+                        heart.remove();
+                    }, (duration + delay) * 1000);
+                }, i * 200); // Kademeli olarak oluştur
+            }
+        }
+
+    </script>
+</body>
+</html>
