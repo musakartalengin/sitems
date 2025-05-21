@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peri Kızın Rüyası</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #000; /* Başlangıçta siyah */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            transition: background-color 2s;
+        }
+
+        .scene-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scene.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Sahne 1: Hüzünlü Gözyaşları */
+        #scene1 {
+            background-image: url('./aglayan_peri.png');
+        }
+
+        /* Sahne 2: Teselli ve Şarkı */
+        #scene2 {
+            background-image: url('./teselli_sahnesi.png');
+        }
+
+        #scene2 .speech-bubble {
+            position: absolute;
+            bottom: 40%; /* Erkek karakterin üstünde görünmesi için yukarı taşındı */
+            left: 35%; /* Erkek karakterin üstünde görünmesi için sola taşındı */
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 20px;
+            border: 2px solid #ccc;
+            min-width: 200px;
+            max-width: 350px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out 1s; /* 1 saniye gecikmeyle görünür */
+            z-index: 10;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        #scene2 .speech-bubble.visible {
+            opacity: 1;
+        }
+
+        /* Sahne 3: Neşenin Geri Dönüşü */
+        #scene3 {
+            background-image: url('./neseli_peri.png');
+        }
+        
+        .uyan-button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background: rgba(106, 90, 205, 0.8); /* Koyu mor - yarı saydam */
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(106, 90, 205, 0.6);
+            transition: all 0.3s;
+            font-weight: bold;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .uyan-button.visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 1s ease-in-out 2s; /* 2 saniye gecikmeyle görünür */
+        }
+
+        .uyan-button:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 0 25px rgba(106, 90, 205, 0.8);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="scene-container">
+        <div class="scene" id="scene1"></div>
+        <div class="scene" id="scene2">
+            <div class="speech-bubble" id="teselli-mesaji">Üzülmeni istemiyorum</div>
+        </div>
+        <div class="scene" id="scene3">
+            <button class="uyan-button" id="uyan-button">Uyan</button>
+        </div>
+    </div>
+
+    <audio id="peri-sarkisi" src="peri_sarkisi.MP3" preload="auto"></audio>
+
+    <script>
+        const scene1 = document.getElementById('scene1');
+        const scene2 = document.getElementById('scene2');
+        const scene3 = document.getElementById('scene3');
+        const teselliMesaji = document.getElementById('teselli-mesaji');
+        const periSarkisi = document.getElementById('peri-sarkisi');
+        const uyanButton = document.getElementById('uyan-button');
+
+        // Kullanıcı etkileşimini bekle (tarayıcı politikaları nedeniyle)
+        document.addEventListener('click', function startExperience() {
+            // Etkileşimi bir kez aldıktan sonra dinleyiciyi kaldır
+            document.removeEventListener('click', startExperience);
+            
+            // Ses dosyasını önceden yükle
+            periSarkisi.load();
+            
+            // Sahne 1'i başlat
+            scene1.classList.add('active');
+            document.body.style.backgroundColor = '#2c3e50'; // Sahne 1 için hüzünlü bir arka plan rengi
+
+            // 5 saniye sonra Sahne 2'ye geç
+            setTimeout(() => {
+                scene1.classList.remove('active');
+                scene2.classList.add('active');
+                teselliMesaji.classList.add('visible');
+                document.body.style.backgroundColor = '#34495e'; // Sahne 2 için biraz daha yumuşak bir renk
+                
+                // Şarkıyı hemen başlat
+                periSarkisi.volume = 0.7; // Ses seviyesini ayarla
+                periSarkisi.play();
+
+                // 15 saniye sonra Sahne 3'e geç
+                setTimeout(() => {
+                    scene2.classList.remove('active');
+                    scene3.classList.add('active');
+                    uyanButton.classList.add('visible');
+                    document.body.style.backgroundColor = '#1abc9c'; // Sahne 3 için neşeli bir renk
+                    
+                    // Uyan butonuna tıklandığında ana sayfaya dön
+                    uyanButton.addEventListener('click', () => {
+                        window.location.href = 'index.html';
+                    });
+
+                }, 15000); // Sahne 2'nin toplam süresi
+            }, 5000); // Sahne 1'in süresi
+        });
+
+        // Sayfa yüklendiğinde bir bildirim göster
+        window.onload = () => {
+            alert("Deneyimi başlatmak için ekrana tıklayın");
+        };
+    </script>
+</body>
+</html> 
