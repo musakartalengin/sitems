@@ -26,6 +26,7 @@
             position: relative;
             z-index: 2;
             transition: opacity 0.8s;
+            object-fit: contain;
         }
         
         .dream-button {
@@ -173,6 +174,44 @@
         .overlay.active {
             visibility: visible;
             opacity: 1;
+        }
+        
+        /* Mobil cihazlar için düzenlemeler */
+        @media (max-width: 768px) {
+            .sleeping-character {
+                width: 90%;
+                max-width: 350px;
+                margin-bottom: 20px;
+            }
+            
+            .dream-button {
+                padding: 12px 25px;
+                font-size: 18px;
+            }
+            
+            .spiral {
+                width: 600px;
+                height: 600px;
+            }
+        }
+        
+        /* Daha küçük mobil cihazlar için ek düzenlemeler */
+        @media (max-width: 480px) {
+            .sleeping-character {
+                width: 95%;
+                max-width: 300px;
+                margin-bottom: 15px;
+            }
+            
+            .dream-button {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            
+            .spiral {
+                width: 400px;
+                height: 400px;
+            }
         }
     </style>
 </head>
